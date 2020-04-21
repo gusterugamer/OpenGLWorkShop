@@ -109,12 +109,13 @@ void Camera::rotateOz(int directie)
 
 void Camera::Update(ESContext* esContext, const float& deltaTime)
 {
+	std::cout << "( " << esContext->mouse.getPosition().first<<"," << esContext->mouse.getPosition().second << " )";
 	this->deltaTime = deltaTime;		
-	if (esContext->kbd.GetKeyUp(0x57))
+	if (esContext->kbd.GetKey(0x57))
 	{
 		moveOz(-1);
-	}
-	if (esContext->kbd.GetKeyDown(0x53))
+	}	
+	if (esContext->kbd.GetKey(0x53))
 	{
 		moveOz(1);
 	}

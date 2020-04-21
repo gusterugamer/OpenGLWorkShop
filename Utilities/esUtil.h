@@ -2,6 +2,7 @@
 #include <GLES2/gl2.h>
 #include <EGL/egl.h>
 #include "Keyboard.h"
+#include "Mouse.h"
 
 //  Macros
 
@@ -52,7 +53,8 @@ public:
 
    //Keyboard
    Keyboard kbd;
-  
+   //Mouse
+   Mouse mouse;
 
 };
 
