@@ -37,8 +37,8 @@ LRESULT WINAPI ESWindowProc ( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 		  {
 			  ESContext *esContext = (ESContext*)(LONG_PTR) GetWindowLongPtr ( hWnd, GWL_USERDATA );
 
-              if (esContext && esContext->keyFunc)              
-                  esContext->keyFunc(esContext, (unsigned char)wParam, true);
+              //if (esContext && esContext->keyFunc)              
+              //    esContext->keyFunc(esContext, (unsigned char)wParam, true);
                   //Added by trainee
               if (esContext) 
               {
@@ -57,8 +57,8 @@ LRESULT WINAPI ESWindowProc ( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 		  {
 			  ESContext *esContext = (ESContext*)(LONG_PTR) GetWindowLongPtr ( hWnd, GWL_USERDATA );
 
-			  if ( esContext && esContext->keyFunc )
-				  esContext->keyFunc ( esContext, (unsigned char) wParam, false );
+			  //if ( esContext && esContext->keyFunc )
+				 // esContext->keyFunc ( esContext, (unsigned char) wParam, false );
               //Added by trainee
               if (esContext)
               {
@@ -184,12 +184,15 @@ void WinLoop ( ESContext *esContext )
       //Removed(commented) by trainee
     /*  else
          SendMessage( esContext->hWnd, WM_PAINT, 0, 0 );*/
-      // Call Update Function
+
+    // Call Update function
+      if (esContext->updateFunc != NULL)
+          esContext->updateFunc(esContext, deltaTime);
+
+      // Call Draw Function
       if (esContext->drawFunc != NULL)
           esContext->drawFunc(esContext);
 
-      // Call update function if registered
-      if ( esContext->updateFunc != NULL )
-         esContext->updateFunc ( esContext, deltaTime );
+    
    }
 }

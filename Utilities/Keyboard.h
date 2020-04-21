@@ -1,5 +1,4 @@
 #pragma once
-#include <queue>
 #include <bitset>
 
 class Keyboard {	
@@ -26,7 +25,8 @@ private:
 	static constexpr int bufferSize = 16u;
 
 	std::bitset<nKeys> keyState;
-	std::queue<char> charBuffer; //containar that hold the chars of the keys stroked
+	std::bitset<nKeys> keyStateDown;
+	char keyChar = 0; //containar that hold the chars of the keys stroked
 
 
 

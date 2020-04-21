@@ -35,8 +35,7 @@ public:
 	void rotateOx(int directie);
 	void rotateOy(int directie);
 	void rotateOz(int directie);
-	void Update(ESContext* esContext, const float& deltaTime);
-	void Key(unsigned char key, bool bIsPressed);
+	void Update(ESContext* esContext, const float& deltaTime);	
 	void UpdateWorldView();
 
 	

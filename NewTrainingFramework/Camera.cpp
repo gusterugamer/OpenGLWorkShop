@@ -110,6 +110,14 @@ void Camera::rotateOz(int directie)
 void Camera::Update(ESContext* esContext, const float& deltaTime)
 {
 	this->deltaTime = deltaTime;		
+	if (esContext->kbd.GetKeyUp(0x57))
+	{
+		moveOz(-1);
+	}
+	if (esContext->kbd.GetKeyDown(0x53))
+	{
+		moveOz(1);
+	}
 	if (esContext->kbd.GetKey(0x41))
 	{
 		moveOx(-1);		
@@ -117,14 +125,6 @@ void Camera::Update(ESContext* esContext, const float& deltaTime)
 	if (esContext->kbd.GetKey(0x44))
 	{
 		moveOx(1);
-	}
-	if (esContext->kbd.GetKey(VK_LEFT))
-	{
-		rotateOy(1);
-	}
-	if (esContext->kbd.GetKey(VK_RIGHT))
-	{
-		rotateOy(-1);
 	}
 	if (esContext->kbd.GetKey(0x5A))
 	{
@@ -134,108 +134,35 @@ void Camera::Update(ESContext* esContext, const float& deltaTime)
 	{
 		moveOy(-1);
 	}
-}
-
-void Camera::Key(unsigned char key, bool bIsPressed)
-{
-		/*if (key == 0x41 && bIsPressed == true)
-		{
-			moveOx(-1);
-		}
-		if (key == 0x44 && bIsPressed == true)
-		{
-			moveOx(1);
-		}
-		if (key == 0x57 && bIsPressed == true)
-		{
-			moveOz(-1);
-		}
-		if (key == 0x53 && bIsPressed == true)
-		{
-			moveOz(1);
-		}
-		if (key == 0x5A && bIsPressed == true)
-		{
-			moveOy(1);
-		}
-		if (key == 0x58 && bIsPressed == true)
-		{
-			moveOy(-1);
-		}
-		if (key == VK_LEFT && bIsPressed == true)
-		{
-			rotateOy(1);
-		}
-		if (key == VK_RIGHT && bIsPressed == true)
-		{
-			rotateOy(-1);
-		}
-		if (key == VK_UP && bIsPressed == true)
-		{
-			rotateOx(-1);
-		}
-		if (key == VK_DOWN && bIsPressed == true)
-		{
-			rotateOx(1);
-		}
-		if (key == VK_NUMPAD1 && bIsPressed == true)
-		{
-			rotateOz(1);
-		}
-		if (key == VK_NUMPAD2 && bIsPressed == true)
-		{
-			rotateOz(-1);
-		}*/
-
-		/*switch (key)
-		{
-		case VK_LEFT :rotateOy(-1);
-			break;
-		case VK_RIGHT:rotateOy(1);
-			break;
-		case VK_UP: rotateOx(-1);
-			break;
-		case VK_DOWN:rotateOx(1);
-			break;
-		case VK_NUMPAD1:rotateOz(1);
-			break;
-		case VK_NUMPAD2:rotateOz(-1);
-			break;
-		case 0x57: moveOz(-1);
-			break;
-		case 0x53: moveOz(1);
-			break;
-		case 0x41: moveOx(-1);
-			break;
-		case 0x44: moveOx(1);
-			break;
-		case 0x5A:moveOy(1);
-			break;
-		case 0x58:moveOy(-1);
-			break;
-		}*/
-		
+	if (esContext->kbd.GetKey(VK_LEFT))
+	{
+		rotateOy(1);
+	}
+	if (esContext->kbd.GetKey(VK_RIGHT))
+	{
+		rotateOy(-1);
+	}
+	if (esContext->kbd.GetKey(VK_UP))
+	{
+		rotateOx(-1);
+	}
+	if (esContext->kbd.GetKey(VK_DOWN))
+	{
+		rotateOx(1);
+	}
+	if (esContext->kbd.GetKey(VK_NUMPAD1))
+	{
+		rotateOz(1);
+	}
+	if (esContext->kbd.GetKey(VK_NUMPAD2))
+	{
+		rotateOz(-1);
+	}	
 }
 
 void Camera::UpdateWorldView()
 {
-	/*zAxis = (position-target).Normalize();
-	xAxis = UP.Cross(zAxis).Normalize(); 
-	yAxis = zAxis.Cross(xAxis).Normalize();*/
-	
-	/*R.m[0][0] = xAxis.x;
-	R.m[1][0] = xAxis.y;
-	R.m[2][0] = xAxis.z;
-	R.m[0][1] = yAxis.x;
-	R.m[1][1] = yAxis.y;
-	R.m[2][1] = yAxis.z;
-	R.m[0][2] = -zAxis.x;
-	R.m[1][2] = -zAxis.y;
-	R.m[2][2] = -zAxis.z;
-	R.m[3][0] = -xAxis.Dot(position);
-	R.m[3][1] = -yAxis.Dot(position);
-	R.m[3][2] = zAxis.Dot(position);*/
-	
+	R.SetIdentity();
 	R.m[0][0] = xAxis.x;
 	R.m[0][1] = xAxis.y;
 	R.m[0][2] = xAxis.z;
@@ -253,7 +180,5 @@ void Camera::UpdateWorldView()
 	T=T.SetTranslation(-position);
 	R = R.Transpose();
 
-	viewMatrix = T*R;
-
-	//viewMatrix = R;
+	viewMatrix = T*R;	
 }

@@ -8,42 +8,48 @@ bool Keyboard::GetKey(unsigned char keycode)
 
 bool Keyboard::GetKeyDown(unsigned char keycode)
 {
+	if (keyState[keycode] && !keyStateDown[keycode])
+	{
+		keyStateDown[keycode] = true;
+		return true;
+	}
 	return false;
 }
 
 bool Keyboard::GetKeyUp(unsigned char keycode)
 {
+	if (!keyState[keycode] && keyStateDown[keycode])
+	{
+		keyStateDown[keycode] = false;
+		return true;
+	}
 	return false;
 }
 
 char Keyboard::GetKeyChar()
 {
-	if (charBuffer.size() > 0u)
-	{
-		unsigned char charcode = charBuffer.front();
-		charBuffer.pop();
-		return charcode;
-	}
+	return keyChar;
 }
 
 void Keyboard::OnKeyPressed(unsigned char keycode)
 {	
 	keyState[keycode] = true;	
+	keyStateDown[keycode] = false;
 }
 
 void Keyboard::OnKeyReleased(unsigned char keycode)
 {
 	keyState[keycode] = false;	
+	keyStateDown[keycode] = true;
 }
 
 void Keyboard::OnChar(char character)
 {
-	/*charBuffer.push(character);
-	while (charBuffer.size() > bufferSize)
-		charBuffer.pop();*/
+	keyChar = character;
 }
 
 void Keyboard::ClearState()
 {
 	keyState.reset();
+	keyStateDown.reset();
 }
