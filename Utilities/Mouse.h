@@ -1,12 +1,10 @@
 #pragma once
-#include <windef.h>
-#include <bitset>
 
+#include <bitset>
 class Mouse
 {
 public:
-	enum class MouseBtns {
-		none=-1,
+	enum class MouseBtns {		
 		LeftButton=1,
 		RightButton=2,
 		MiddleButton=4,
@@ -34,11 +32,11 @@ public:
 	void OnMouseButtonReleased(MouseBtns btn, int x, int y);
 	void OnWheelUp(int x, int y);
 	void OnWheelDown(int x, int y);
-	void ClearState();
+	void ClearState();	
 private:
-	int x;
-	int y;
-	static constexpr int nKeys = 256u;
+	int x = 0;
+	int y = 0;
+	static constexpr const int nKeys = 256u;
 	std::bitset<nKeys> keyState;
 	std::bitset<nKeys> keyStateDown;
 };

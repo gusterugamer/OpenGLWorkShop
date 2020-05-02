@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "Camera.h"
-#include <iostream>
 
 Camera::Camera(Vector3 position,Vector3 target,GLfloat fov, GLfloat nearZ, GLfloat farZ, float moveSpeed, float rotateSpeed)
 	:
@@ -13,9 +12,9 @@ Camera::Camera(Vector3 position,Vector3 target,GLfloat fov, GLfloat nearZ, GLflo
 	target(target)
 {	
 	R.SetIdentity();
-	zAxis = (position - target).Normalize();
-	xAxis = UP.Cross(zAxis).Normalize();
-	yAxis = zAxis.Cross(xAxis).Normalize();
+	//zAxis = (position - target).Normalize();
+	//xAxis = UP.Cross(zAxis).Normalize();
+	//yAxis = zAxis.Cross(xAxis).Normalize();
 	perspectiveMatrix.SetPerspective(fov, ratio, nearZ, farZ);	
 	UpdateWorldView();	
 }
@@ -42,7 +41,7 @@ const Vector3& Camera::GetPosition() const
 
 void Camera::moveOx(float directie)
 {	
-	xAxis = UP.Cross(zAxis).Normalize();	
+	//xAxis = UP.Cross(zAxis).Normalize();	
 	Vector3 vectorDeplasare = xAxis * deltaTime * moveSpeed * directie;
 	position += vectorDeplasare;
 	target += vectorDeplasare;		
@@ -51,7 +50,7 @@ void Camera::moveOx(float directie)
 
 void Camera::moveOy(int directie)
 {	
-	yAxis = zAxis.Cross(xAxis).Normalize();	
+	//yAxis = zAxis.Cross(xAxis).Normalize();	
 	Vector3 vectorDeplasare = yAxis * moveSpeed*deltaTime  * (float)directie;
 	position += vectorDeplasare;
 	target += vectorDeplasare;	
@@ -60,36 +59,37 @@ void Camera::moveOy(int directie)
 
 void Camera::moveOz(int directie)
 {	
-	zAxis = (position - target).Normalize();	
+	//zAxis = (position - target).Normalize();	
 	Vector3 vectorDeplasare = zAxis*moveSpeed * deltaTime * (float)directie;
 	position += vectorDeplasare;
 	target += vectorDeplasare;
 	UpdateWorldView();
 }
 
-void Camera::rotateOx(int directie)
+void Camera::rotateOx(float directie)
 {	
 	Matrix rotate;
-	rotate.SetRotationX(rotateSpeed * deltaTime * directie);	
+	rotate.SetRotationX(directie * deltaTime * rotateSpeed);	
 	UP = Convert2Vec3(Vector4(0.0f,1.0f,0.0f, 0.0f) * rotate);
 	UP = Convert2Vec3(Vector4 (UP, 0.0f)* worldMatrix).Normalize();	
 	Vector4 localTarget = Vector4(0.0f, 0.0f, -(target - position).Length(), 1.0f);
 	Vector4 rotatedTarget = localTarget * rotate;	
 	target = Convert2Vec3(rotatedTarget * worldMatrix);	
-	zAxis = (position-target).Normalize();	
-	yAxis = zAxis.Cross(xAxis).Normalize();
+	//zAxis = (position-target).Normalize();	
+//	yAxis = zAxis.Cross(xAxis).Normalize();
 	UpdateWorldView();
 }
 
-void Camera::rotateOy(int directie)
+void Camera::rotateOy(float directie)
 {
 	Matrix rotate;
 	rotate = rotate.SetRotationY(rotateSpeed * deltaTime * directie);	
+	rotate = rotate.SetRotationY(directie * deltaTime * rotateSpeed);
 	Vector4 localTarget = Vector4(0, 0, -(target - position).Length(), 1.0f);
 	Vector4 rotatedTarget = localTarget * rotate;
 	target = Convert2Vec3(rotatedTarget * worldMatrix);	
-	zAxis = (position - target).Normalize();
-	xAxis = UP.Cross(zAxis).Normalize();	
+	//zAxis = (position - target).Normalize();
+	//xAxis = UP.Cross(zAxis).Normalize();	
 	UpdateWorldView();
 }	
 
@@ -102,15 +102,15 @@ void Camera::rotateOz(int directie)
 	Vector4 localTarget = Vector4(0, 0, -(target - position).Length(), 1.0f);
 	Vector4 rotatedTarget = localTarget * rotate;
 	target = Convert2Vec3(rotatedTarget * worldMatrix);	
-	xAxis = UP.Cross(zAxis).Normalize();
-	yAxis = zAxis.Cross(xAxis).Normalize();
+	//xAxis = UP.Cross(zAxis).Normalize();
+	//yAxis = zAxis.Cross(xAxis).Normalize();
 	UpdateWorldView();	
 }
 
 void Camera::Update(ESContext* esContext, const float& deltaTime)
-{
-	std::cout << "( " << esContext->mouse.getPosition().first<<"," << esContext->mouse.getPosition().second << " )";
-	this->deltaTime = deltaTime;		
+{	
+	this->deltaTime = deltaTime;	
+	this->esContext = esContext;
 	if (esContext->kbd.GetKey(0x57))
 	{
 		moveOz(-1);
@@ -134,7 +134,7 @@ void Camera::Update(ESContext* esContext, const float& deltaTime)
 	if (esContext->kbd.GetKey(0x58))
 	{
 		moveOy(-1);
-	}
+	}	
 	if (esContext->kbd.GetKey(VK_LEFT))
 	{
 		rotateOy(1);
@@ -145,11 +145,11 @@ void Camera::Update(ESContext* esContext, const float& deltaTime)
 	}
 	if (esContext->kbd.GetKey(VK_UP))
 	{
-		rotateOx(-1);
+		rotateOx(1);
 	}
 	if (esContext->kbd.GetKey(VK_DOWN))
 	{
-		rotateOx(1);
+		rotateOx(-1);
 	}
 	if (esContext->kbd.GetKey(VK_NUMPAD1))
 	{
@@ -162,8 +162,12 @@ void Camera::Update(ESContext* esContext, const float& deltaTime)
 }
 
 void Camera::UpdateWorldView()
-{
-	R.SetIdentity();
+{	
+
+	zAxis = (position - target).Normalize();
+	xAxis = UP.Cross(zAxis).Normalize();
+	yAxis = zAxis.Cross(xAxis).Normalize();
+
 	R.m[0][0] = xAxis.x;
 	R.m[0][1] = xAxis.y;
 	R.m[0][2] = xAxis.z;

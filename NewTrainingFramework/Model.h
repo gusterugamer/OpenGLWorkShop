@@ -12,16 +12,15 @@ public:
 	Model() = default;
 	~Model();
 	Model(const std::string& path);
+	Model(const VertexBuffer& vb, const IndexBuffer& ib); //constructor for generated models
 
 	void ReadModelFile(const std::string& file);
 
-	IndexBuffer& GetIb();
-	VertexBuffer& GetVd();	
+	const IndexBuffer& GetIb() const;
+	const VertexBuffer& GetVd() const;	
 
 	const std::vector<GLushort>& getIndcies() const;
-	const std::vector<Vertex>& getVerts() const;
-
-	//DE PUS INAPOI PE PRIVAT
+	const std::vector<Vertex>& getVerts() const;	
 	
 	  
 private:	

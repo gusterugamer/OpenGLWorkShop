@@ -210,8 +210,10 @@ void SceneManager::ReadXML()
 						//Citire lights din XML si pasarea in resursa temporara 										
 						for (xmlnode* ppNode = pNode->first_node("lights")->first_node("light"); ppNode; ppNode = ppNode->next_sibling())
 						{
-							OR.lights.push_back(std::stoi(ppNode->value()));
-						}						
+							OR.lights.push_back(std::stoi(ppNode->value()));							
+						}	
+						OR.reflectivity = std::stof(pNode->first_node("reflectivity")->value());
+						OR.shineDamper= std::stof(pNode->first_node("shineDamper")->value());
 						sceneObjectsMap[tempID] = std::make_shared<SceneObject>(OR);
 					}	
 					else if (std::string(pNode->first_node("type")->value()) == "fire")

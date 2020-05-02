@@ -9,7 +9,6 @@
 LRESULT WINAPI ESWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	LRESULT  lRet = 1;
-	///asdasdasdasd
 	switch (uMsg)
 	{
 	case WM_CREATE:
@@ -269,6 +268,7 @@ void WinLoop(ESContext* esContext)
 {
 	MSG msg = { 0 };
 	int done = 0;
+	//GetTickCount function is slow and causes small stuttering
 	// DWORD lastTime = GetTickCount();
 	auto timeNow = std::chrono::high_resolution_clock::now();
 

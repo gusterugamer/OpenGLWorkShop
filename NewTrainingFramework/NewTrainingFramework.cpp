@@ -4,7 +4,6 @@
 #include "ResourceManager.h"
 #include "SceneManager.h"
 #include <iostream>
-#include <chrono>
 
 ResourceManager* RM = ResourceManager::GetInstance();
 SceneManager* SM = SceneManager::GetInstance();

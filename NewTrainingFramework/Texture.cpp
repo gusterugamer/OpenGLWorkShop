@@ -4,7 +4,6 @@
 #include <iostream>
 #include "OpenGLErrorChecking.h"
 #include "ResourceManager.h"
-#include <string_view>
 
 const GLint Texture::GetTextureId() const
 {
@@ -40,6 +39,7 @@ Texture::Texture(std::shared_ptr<TextureResource> pTr)
 		else if (pTr->type == "cube")
 		{		
 			std::string fata1;	
+
 			for (int i = t_height / 3; i < 2*t_height/3; i++)
 			{
 				for (int j = 0; j < 3*t_width/4; j++)
@@ -47,18 +47,9 @@ Texture::Texture(std::shared_ptr<TextureResource> pTr)
 					fata1 += *(ap + 3 * (i * t_width + 2*t_width/4) + j);
 				}
 			}			
-
-			/*for (int i = 0; i < 3 * t_width / 4; i++)
-			{
-				for (int j = 0; j < t_height; j++)
-				{
-					fata1 += *(ap + 3 * i * t_width + 3 * t_width / 4 + j);
-				}
-			}*/
-			
-			GLCall(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL_RGB, t_width/4, t_height/3, 0, GL_RGB, GL_UNSIGNED_BYTE, fata1.data()));
-			//GLCall(glTexSubImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X,0, t_width / 4, t_height / 3, 0, 0, GL_RGB, GL_UNSIGNED_BYTE, ap));
+			GLCall(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL_RGB, t_width/4, t_height/3, 0, GL_RGB, GL_UNSIGNED_BYTE, fata1.data()));			
 			fata1.clear();
+
 			for (int i = t_height / 3; i < 2 * t_height / 3; i++)
 			{
 				for (int j = 0; j < 3 * t_width / 4; j++)
@@ -66,11 +57,9 @@ Texture::Texture(std::shared_ptr<TextureResource> pTr)
 					fata1 += *(ap + 3 * (i * t_width) + j);
 				}
 			}
-
 			GLCall(glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, GL_RGB, t_width/4 , t_height /3, 0, GL_RGB, GL_UNSIGNED_BYTE, fata1.data()));
-		//	GLCall(glTexSubImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, t_width / 4,  t_height / 3, t_width / 4, 1, GL_RGB, GL_UNSIGNED_BYTE, ap));
+			fata1.clear();	
 
-			fata1.clear();				
 			for (int i = 0; i < t_height / 3; i++)
 			{
 				for (int j = 0; j < 3 * t_width / 4; j++)
@@ -78,10 +67,9 @@ Texture::Texture(std::shared_ptr<TextureResource> pTr)
 					fata1 += *(ap + 3 * (i * t_width + t_width / 4) + j);
 				}
 			}
-
-			GLCall(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, GL_RGB, t_width/4 , t_height/3 , 0, GL_RGB, GL_UNSIGNED_BYTE, fata1.data()));
-			//GLCall(glTexSubImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, t_width / 4,  0, t_width / 4, t_height / 3, GL_RGB, GL_UNSIGNED_BYTE, ap));
+			GLCall(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, GL_RGB, t_width/4 , t_height/3 , 0, GL_RGB, GL_UNSIGNED_BYTE, fata1.data()));			
 			fata1.clear();
+
 			for (int i = 2 * t_height / 3; i < t_height; i++)
 			{
 				for (int j = 0; j < 3 * t_width / 4; j++)
@@ -90,20 +78,20 @@ Texture::Texture(std::shared_ptr<TextureResource> pTr)
 				}
 			}
 
-			GLCall(glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, GL_RGB, t_width/4 , t_height/3 , 0, GL_RGB, GL_UNSIGNED_BYTE, fata1.data()));
-			//GLCall(glTexSubImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, t_width / 4,  0, t_width / 4, t_height / 3, GL_RGB, GL_UNSIGNED_BYTE, ap));
+
+			GLCall(glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, GL_RGB, t_width/4 , t_height/3 , 0, GL_RGB, GL_UNSIGNED_BYTE, fata1.data()));			
 			fata1.clear();
+
 			for (int i = t_height / 3; i < 2 * t_height / 3; i++)
 			{
 				for (int j = 0; j < 3 * t_width / 4; j++)
 				{
 					fata1 += *(ap + 3 * (i * t_width + t_width / 4) + j);
 				}
-			}
-			
-			GLCall(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, GL_RGB, t_width/4 , t_height /3, 0, GL_RGB, GL_UNSIGNED_BYTE, fata1.data()));
-			//GLCall(glTexSubImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, t_width / 4,  0, t_width / 4, t_height / 3, GL_RGB, GL_UNSIGNED_BYTE, ap));
+			}			
+			GLCall(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, GL_RGB, t_width/4 , t_height /3, 0, GL_RGB, GL_UNSIGNED_BYTE, fata1.data()));			
 			fata1.clear();
+
 			for (int i = t_height / 3; i < 2 * t_height / 3; i++)
 			{
 				for (int j = 0; j < 3 * t_width / 4; j++)
@@ -111,22 +99,7 @@ Texture::Texture(std::shared_ptr<TextureResource> pTr)
 					fata1 += *(ap + 3 * (i * t_width + 3 * t_width / 4) + j);
 				}
 			}
-
-			GLCall(glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, GL_RGB, t_width/4 , t_height/3 , 0, GL_RGB, GL_UNSIGNED_BYTE, fata1.data()));
-			//GLCall(glTexSubImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, t_width / 4,  0, t_width / 4, t_height / 3, GL_RGB, GL_UNSIGNED_BYTE, ap));
-
-			
-			
-
-			/*GLCall(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL_RGB,  t_width / 4, t_height/3, 0, GL_RGB, GL_UNSIGNED_BYTE, ceva));			
-			GLCall(glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, GL_RGB,  t_width / 4, t_height/3, 0, GL_RGB, GL_UNSIGNED_BYTE, ceva));
-			GLCall(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, GL_RGB,  t_width / 4, t_height/3, 0, GL_RGB, GL_UNSIGNED_BYTE, ceva));
-			GLCall(glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, GL_RGB,  t_width / 4, t_height/3, 0, GL_RGB, GL_UNSIGNED_BYTE, ceva));
-			GLCall(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, GL_RGB,  t_width / 4, t_height/3, 0, GL_RGB, GL_UNSIGNED_BYTE, ceva));
-			GLCall(glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, GL_RGB,  t_width / 4, t_height/3, 0, GL_RGB, GL_UNSIGNED_BYTE, ceva));*/
-
-			
-			
+			GLCall(glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, GL_RGB, t_width/4 , t_height/3 , 0, GL_RGB, GL_UNSIGNED_BYTE, fata1.data()));			
 
 			GLCall(glBindTexture(ResourceManager::GetInstance()->glStringToInt[pTr->type], 0));
 		}
@@ -138,15 +111,7 @@ Texture::Texture(std::shared_ptr<TextureResource> pTr)
 		{
 			GLCall(glTexImage2D(ResourceManager::GetInstance()->glStringToInt[pTr->type], 0, GL_RGBA, t_width, t_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, ap));
 			GLCall(glBindTexture(ResourceManager::GetInstance()->glStringToInt[pTr->type], 0));
-		}
-		if (pTr->type == "cube")
-		{
-			for (int i = 0; i < 6; i++)
-			{
-				GLCall(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA, t_width, t_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, ap));
-			}
-			GLCall(glBindTexture(ResourceManager::GetInstance()->glStringToInt[pTr->type], 0));
-		}
+		}	
 	}
 }
 

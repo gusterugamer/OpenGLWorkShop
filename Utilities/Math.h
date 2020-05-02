@@ -1,6 +1,5 @@
 #pragma once
 #include "esUtil.h"
-
 //Vector2
 class Vector2
 {
@@ -11,7 +10,7 @@ public:
 	Vector2(GLfloat * pArg) : x(pArg[0]), y(pArg[1]) {}
 	//Vector2(Vector2 & vector) : x(vector.x), y(vector.y) {}
 	Vector2(const Vector2 & vector) : x(vector.x), y(vector.y) {}
-	Vector2(Vector2 && vector) : x(vector.x), y(vector.y) {}
+	Vector2(Vector2 && vector) noexcept : x(vector.x), y(vector.y) {}
 
 	//Vector's operations
 	GLfloat Length();
@@ -42,14 +41,17 @@ public:
 
 class Vector3
 {
+//Making Vector4 a friend class makes sens rather than having a function to convert Vec4 into Vec3;
+	
 public:
+	//friend class Vector4;
 	//Constructors
 	Vector3() : x(0.0f), y(0.0f), z(0.0f) {}
 	Vector3(GLfloat _x, GLfloat _y, GLfloat _z) : x(_x), y(_y), z(_z) {}
 	Vector3(GLfloat * pArg) : x(pArg[0]), y(pArg[1]), z(pArg[2]) {}
 	Vector3(Vector3 & vector) : x(vector.x), y(vector.y), z(vector.z) {}
 	Vector3(const Vector3 & vector) : x(vector.x), y(vector.y), z(vector.z) {}
-	Vector3(Vector3&& vector) : x(vector.x), y(vector.y), z(vector.z) {}	
+	Vector3(Vector3&& vector) noexcept : x(vector.x), y(vector.y), z(vector.z) {}		
 	
 	//Vector's operations
 	GLfloat Length();
@@ -75,7 +77,7 @@ public:
 	// data members
 	GLfloat x;
 	GLfloat y;
-	GLfloat z;
+	GLfloat z;	
 };
 
 //Vector4
@@ -93,7 +95,7 @@ public:
 	Vector4(Vector3 & vector) : x(vector.x), y(vector.y), z(vector.z), w(1.0f){}
 	Vector4(Vector3 & vector, GLfloat _w) : x(vector.x), y(vector.y), z(vector.z), w(_w) {}
 	Vector4(Vector4 & vector) : x(vector.x), y(vector.y), z(vector.z), w(vector.w) {}
-	Vector4(Vector4 && vector) : x(vector.x), y(vector.y), z(vector.z), w(vector.w) {}
+	Vector4(Vector4&& vector) noexcept : x(vector.x), y(vector.y), z(vector.z), w(vector.w) {};
 
 	//Vector's operations
 	GLfloat Length();
@@ -122,7 +124,7 @@ public:
 	GLfloat x;
 	GLfloat y;
 	GLfloat z;
-	GLfloat w;
+	GLfloat w;	
 };
 
 //Matrix 4 X 4
@@ -131,6 +133,7 @@ public:
 class Matrix
 {
 public:
+	static constexpr const float DEG_TO_RAD = 0.01745329251994329576923690768489f;
 	//constructors
 	Matrix() {}
 	Matrix(GLfloat val);

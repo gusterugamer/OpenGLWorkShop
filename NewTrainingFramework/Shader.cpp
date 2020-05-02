@@ -35,6 +35,7 @@ void Shader::Load()
 	//Atributes
 	positionAttribute = glGetAttribLocation(program, "a_pos");		
 	textureCoordAttrib = glGetAttribLocation(program, "a_uv");	
+	normalAttrib = glGetAttribLocation(program, "a_normal");
 
 	//Uniforms
 	textureUniform = glGetUniformLocation(program, "u_texture");

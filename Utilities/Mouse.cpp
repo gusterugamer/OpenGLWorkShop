@@ -38,7 +38,7 @@ int Mouse::getY() noexcept
 
 std::pair<int, int> Mouse::getPosition() noexcept
 {
-	return std::pair<int, int>(x,y);
+	return std::pair<int, int>(x,y);	
 }
 
 void Mouse::OnMouseMove(int x, int y)

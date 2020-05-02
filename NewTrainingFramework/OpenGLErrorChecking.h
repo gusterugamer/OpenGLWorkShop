@@ -23,4 +23,6 @@ static bool GlLogCall(const char* function, const char* file, int line)
 	}
 	return true;
 }
+#else
+#define GLCall(x) x;
 #endif

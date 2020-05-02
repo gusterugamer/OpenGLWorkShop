@@ -2,13 +2,14 @@
 #include "Terrain.h"
 #include "OpenGLErrorChecking.h"
 #include "SceneManager.h"
+#include "Renderer.h"
 
 Terrain::Terrain(TerrainProperties& sop)
 	:sop(sop)
 {	
 	pMdl = nullptr;
 	pShader = ResourceManager::GetInstance()->loadShader(sop.shaderId);
-	Init();
+	Init();	
 }
 
 Terrain::~Terrain()
@@ -28,25 +29,17 @@ void Terrain::Draw()
 
 	modelMatrix = SM * RM * TM;
 
-	Renderer::DrawTerrain(vb, ib, *pShader, terrainTexMap);
+	Renderer::DrawBlendedTextures(modelMatrix,vb,ib,*pShader,terrainTexMap);
 
 	//Trasmitere modelMatrix catre fragment shader	
-	GLint attribBlendUv = pShader->AddAttrib("a_uvblend");
-	GLint uniformMoveTexX = pShader->AddUniform("u_moveTexX");
+	
+	/*GLint uniformMoveTexX = pShader->AddUniform("u_moveTexX");
 	GLint uniformMoveTexY = pShader->AddUniform("u_moveTexY");
 	GLint uniformHeight = pShader->AddUniform("u_height");
-	
 
-
-	GLCall(glEnableVertexAttribArray(attribBlendUv));
-	GLCall(glVertexAttribPointer(attribBlendUv, sizeof(Vector2) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, uvblend)));
-
-	GLCall(glUniformMatrix4fv(pShader->modelMatrixUniform, 1, GL_FALSE, (GLfloat*)modelMatrix.m));	
-	//GLCall(glBufferSubData(GL_ARRAY_BUFFER, 0, vert.size() * sizeof(Vertex), vert.data()));
 	GLCall(glUniform1f(uniformMoveTexX, moveTextureX));
-	GLCall(glUniform1f(uniformMoveTexY, moveTextureY));
-	GLCall(glUniform1f(uniformMoveTexY, moveTextureY));
-	GLCall(glUniform3f(uniformHeight, sop.height.x, sop.height.y, sop.height.z));
+	GLCall(glUniform1f(uniformMoveTexY, moveTextureY));	
+	GLCall(glUniform3f(uniformHeight, sop.height.x, sop.height.y, sop.height.z));*/
 }
 
 void Terrain::Init(){
@@ -92,7 +85,7 @@ void Terrain::Init(){
 
 	//Initializare buffere pentru teren
 	vb = { vert.data(),vert.size() };
-	ib = { indicies.data(),nrIndicies };	
+	ib = { indicies.data(),nrIndicies };
 
 	//Incarcare texturi	
 	terrainTexMap.reserve(sop.textureId.size());

@@ -1,8 +1,7 @@
 #pragma once
 #include "SceneObject.h"
 
-struct SkyBoxProps : SceneObjectProperties {
-
+struct SkyBoxProps : SceneObjectProperties {	
 };
 
 class Skybox : public SceneObject

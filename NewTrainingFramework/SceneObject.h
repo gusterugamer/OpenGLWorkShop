@@ -3,9 +3,9 @@
 #include "Shader.h"
 #include "Camera.h"
 #include "ResourceManager.h"
-#include "Renderer.h"
 #include "IndexBuffer.h"
 #include "VertexBuffer.h"
+#include "Light.h"
 
 struct SceneObjectProperties {
 	//proprietatile unui obiect
@@ -27,10 +27,14 @@ struct SceneObjectProperties {
 	float trajectorySpeed;
 	std::vector<int> lights;
 	Vector3 color = { 1.0f, 1.0f, 1.0f }; //culoare implicit daca modelul nu are textura incarcata(rosu)
+	float reflectivity = 0.0f; //using before adding material class
+	float shineDamper = 0.0f; //using before adding material class
 };
 
 class SceneObject
 {
+private:
+	Light light;
 protected:	
 	//Pointeri catre resurele incarcate
 	std::shared_ptr<Model> pMdl = nullptr;
@@ -40,7 +44,6 @@ protected:
 	//Proprietati Obiect		
 	SceneObjectProperties sop;
 
-	//Matrice Model
 	Matrix RMx;
 	Matrix RMy;
 	Matrix RMz;
@@ -48,7 +51,7 @@ protected:
 	Matrix TM;
 	Matrix modelMatrix;
 	Matrix RM;
-	
+
 public:
 
 	virtual ~SceneObject();

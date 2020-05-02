@@ -8,7 +8,7 @@
 
 
 Model::~Model()
-{	
+{		
 	ib.DeleteBuffer();
 	vb.DeleteBuffer();
 }
@@ -19,6 +19,7 @@ Model::Model(const std::string& path)
 	vb = { verticies.data(), nrvertces };
 	ib = { indicies.data(), nrindicies };	
 }
+
 
 void Model::ReadModelFile(const std::string& file)
 {
@@ -117,9 +118,9 @@ void Model::ReadModelFile(const std::string& file)
 	}
 }
 
-IndexBuffer& Model::GetIb() { return ib; }
-
-VertexBuffer& Model::GetVd(){	return vb; }
+const IndexBuffer& Model::GetIb() const { return ib; }
+ 
+const VertexBuffer& Model::GetVd() const {	return vb; }
 
 const std::vector<GLushort>& Model::getIndcies() const
 {

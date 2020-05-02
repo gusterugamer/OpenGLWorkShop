@@ -71,6 +71,22 @@
     <PATH></PATH>
   </DEFECT><DEFECT>
     <SFA>
+      <FILEPATH>D:\Gameloft\OpenGL-Practice\NewTrainingFramework_2015\Utilities\</FILEPATH>
+      <FILENAME>esUtil.h</FILENAME>
+      <LINE>59</LINE>
+      <COLUMN>0</COLUMN>
+    </SFA>
+    <DEFECTCODE>26495</DEFECTCODE>
+    <DESCRIPTION>Variable 'ESContext::width' is uninitialized. Always initialize a member variable (type.6).</DESCRIPTION>
+    <FUNCTION>ESContext::{ctor}</FUNCTION>
+    <DECORATED>??0ESContext@@QAE@XZ</DECORATED>
+    <FUNCLINE>59</FUNCLINE>
+    <ADDITIONALINFO>
+      <targetSymbol>ESContext::width</targetSymbol>
+    </ADDITIONALINFO>
+    <PATH></PATH>
+  </DEFECT><DEFECT>
+    <SFA>
       <FILEPATH>D:\Gameloft\OpenGL-Practice\NewTrainingFramework_2015\NewTrainingFramework\</FILEPATH>
       <FILENAME>ResourceManager.cpp</FILENAME>
       <LINE>15</LINE>
@@ -328,14 +344,14 @@
     <SFA>
       <FILEPATH>D:\Gameloft\OpenGL-Practice\NewTrainingFramework_2015\NewTrainingFramework\</FILEPATH>
       <FILENAME>SceneManager.cpp</FILENAME>
-      <LINE>18</LINE>
+      <LINE>17</LINE>
       <COLUMN>19</COLUMN>
     </SFA>
     <DEFECTCODE>6262</DEFECTCODE>
     <DESCRIPTION>Function uses '67232' bytes of stack:  exceeds /analyze:stacksize '16384'.  Consider moving some data to heap.</DESCRIPTION>
     <FUNCTION>SceneManager::ReadXML</FUNCTION>
     <DECORATED>?ReadXML@SceneManager@@AAEXXZ</DECORATED>
-    <FUNCLINE>18</FUNCLINE>
+    <FUNCLINE>17</FUNCLINE>
     <PATH></PATH>
   </DEFECT><DEFECT>
     <SFA>

@@ -23,6 +23,7 @@ public:
 
 	GLint positionAttribute;	
 	GLint textureCoordAttrib;
+	GLint normalAttrib;
 
 	GLint textureUniform;	
 	GLint viewMatrixUniform;

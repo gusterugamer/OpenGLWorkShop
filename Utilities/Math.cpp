@@ -384,8 +384,9 @@ Matrix & Matrix::SetIdentity()
 
 Matrix & Matrix::SetRotationX(GLfloat angle)
 {
-	GLfloat s = sinf(angle);
-	GLfloat c = cosf(angle);
+	float RadAngle = angle * DEG_TO_RAD;
+	GLfloat s = sinf(RadAngle);
+	GLfloat c = cosf(RadAngle);
 	m[0][0] = 1.0f; m[0][1] = 0.0f; m[0][2] = 0.0f; m[0][3] = 0.0f;
 	m[1][0] = 0.0f; m[1][1] =    c; m[1][2] =    s; m[1][3] = 0.0f;
 	m[2][0] = 0.0f; m[2][1] =   -s; m[2][2] =    c; m[2][3] = 0.0f;
@@ -395,8 +396,9 @@ Matrix & Matrix::SetRotationX(GLfloat angle)
 
 Matrix & Matrix::SetRotationY(GLfloat angle)
 {
-	GLfloat s = sinf(angle);
-	GLfloat c = cosf(angle);
+	float RadAngle = angle * DEG_TO_RAD;
+	GLfloat s = sinf(RadAngle);
+	GLfloat c = cosf(RadAngle);
 	m[0][0] =    c; m[0][1] = 0.0f; m[0][2] =   -s; m[0][3] = 0.0f;
 	m[1][0] = 0.0f; m[1][1] = 1.0f; m[1][2] = 0.0f; m[1][3] = 0.0f;
 	m[2][0] =    s; m[2][1] = 0.0f; m[2][2] =    c; m[2][3] = 0.0f;
@@ -406,8 +408,9 @@ Matrix & Matrix::SetRotationY(GLfloat angle)
 
 Matrix & Matrix::SetRotationZ(GLfloat angle)
 {
-	GLfloat s = sinf(angle);
-	GLfloat c = cosf(angle);
+	float RadAngle = angle * DEG_TO_RAD;
+	GLfloat s = sinf(RadAngle);
+	GLfloat c = cosf(RadAngle);
 	m[0][0] =    c; m[0][1] =    s; m[0][2] = 0.0f; m[0][3] = 0.0f;
 	m[1][0] =   -s; m[1][1] =    c; m[1][2] = 0.0f; m[1][3] = 0.0f;
 	m[2][0] = 0.0f; m[2][1] = 0.0f; m[2][2] = 1.0f; m[2][3] = 0.0f;

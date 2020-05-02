@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Fire.h"
 #include "OpenGLErrorChecking.h"
+#include "Renderer.h"
 
 Fire::Fire(FireProperties & sop)
 	:sop(sop)
@@ -30,13 +31,13 @@ void Fire::Draw()
 
 	GLint unifTime = pShader->AddUniform("u_Time");
 	GLint unifDispMax = pShader->AddUniform("u_dispMax");
-	Renderer::DrawTerrain(pMdl->GetVd(), pMdl->GetIb(), *pShader, textures);		
+	Renderer::DrawMultiTexture(modelMatrix,*pMdl, *pShader, textures);		
 
-	GLCall(glUniformMatrix4fv(pShader->modelMatrixUniform, 1, GL_FALSE, (GLfloat*)modelMatrix.m));
+	
 	GLCall(glUniform1f(unifTime, u_Time));
 	GLCall(glUniform1f(unifDispMax, sop.dispMax));
 
-	GLCall(glDisable(GL_BLEND));
+	//GLCall(glDisable(GL_BLEND));
 }
 
 void Fire::Update(ESContext* esContext, const float & deltaTime)

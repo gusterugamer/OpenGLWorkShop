@@ -2,6 +2,7 @@
 #include "Skybox.h"
 #include "OpenGLErrorChecking.h"
 #include "SceneManager.h"
+#include "Renderer.h"
 
 Skybox::Skybox(SkyBoxProps& sop)
 	:sop(sop)
@@ -24,10 +25,7 @@ void Skybox::Draw()
 
 	modelMatrix = SM*  RM * TM;
 	
-	Renderer::DrawSkyBox(pMdl->GetVd(), pMdl->GetIb(), *pShader, *pTex);
-
-	//Trasmitere modelMatrix catre fragment shader	
-	GLCall(glUniformMatrix4fv(pShader->modelMatrixUniform, 1, GL_FALSE, (GLfloat*)modelMatrix.m));	
+	Renderer::DrawSkyBox(modelMatrix,*pMdl, *pShader, *pTex);	
 }
 
 void Skybox::Update(ESContext* esContext,const float & deltaTime)

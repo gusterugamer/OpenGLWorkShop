@@ -2,7 +2,6 @@
 #include "SceneObject.h"
 #include "Shader.h"
 #include <string>
-#include "Renderer.h"
 
 struct TerrainProperties : SceneObjectProperties
 {
@@ -44,6 +43,8 @@ private:
 
 	IndexBuffer ib;
 	VertexBuffer vb;
+
+	Model TerrainModel;
 
 	/////////////////////TEMPORRAR///////////////////////////
 	

@@ -3,6 +3,7 @@
 #include <iostream>
 #include "OpenGLErrorChecking.h"
 #include "SceneManager.h"
+#include "Renderer.h"
 
 SceneObject::~SceneObject()
 {
@@ -18,19 +19,10 @@ SceneObject::SceneObject(SceneObjectProperties& sop)
 
 void SceneObject::Draw()
 {
-	RM = RMx.SetRotationX(sop.rotation.x) * RMy.SetRotationY(sop.rotation.y) *
-		RMz.SetRotationZ(sop.rotation.z);
-	SM = SM.SetScale(sop.scale);
-	TM = TM.SetTranslation(sop.translation);
-
-	modelMatrix = SM*TM*RM;
-	Renderer::Draw(pMdl->GetVd(), pMdl->GetIb(), *pShader, *pTex);
-	
-	GLCall(glUniformMatrix4fv(pShader->modelMatrixUniform, 1, GL_FALSE, (GLfloat*)modelMatrix.m));
-	//Trasmitere modelMatrix catre fragment shader		
-	
+	light = Light({ Vector3(0.0f,250.0f,0.0f),Vector3(1.0f,1.0f,1.0f),Vector3(1.0f,0.0f,0.0f),TypeOfLight::Point });
+	Renderer::Draw(sop,*pMdl,*pShader,*pTex,light);	
 }
 
 void SceneObject::Update(ESContext* esContext, const float& deltaTime)
-{		
+{
 }

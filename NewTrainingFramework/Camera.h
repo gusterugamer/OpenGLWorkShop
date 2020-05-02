@@ -24,6 +24,8 @@ private:
 	Matrix perspectiveMatrix;	
 	Matrix T;
 	Matrix R;
+
+	ESContext* esContext;	
 public:
 
 	Camera() = delete;
@@ -32,13 +34,11 @@ public:
 	void moveOx(float directie);
 	void moveOy(int directie);
 	void moveOz(int directie);
-	void rotateOx(int directie);
-	void rotateOy(int directie);
+	void rotateOx(float directie);
+	void rotateOy(float directie);
 	void rotateOz(int directie);
 	void Update(ESContext* esContext, const float& deltaTime);	
-	void UpdateWorldView();
-
-	
+	void UpdateWorldView();	
 
     const Vector3& GetPosition() const;
 	Vector3 Convert2Vec3(Vector4 & vector4);	
