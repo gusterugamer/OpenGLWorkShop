@@ -22,6 +22,7 @@ struct TextureResource
 	std::string mag_filter = "";
 	std::string wrap_s = "";
 	std::string wrap_t = "";	
+	std::string normalMap = "";
 };
 
 //Resurse pentru SceneManager (XML)

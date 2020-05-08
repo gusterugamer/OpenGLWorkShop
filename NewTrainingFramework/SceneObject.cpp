@@ -19,7 +19,8 @@ SceneObject::SceneObject(SceneObjectProperties& sop)
 
 void SceneObject::Draw()
 {
-	light = Light({ Vector3(0.0f,250.0f,0.0f),Vector3(1.0f,1.0f,1.0f),Vector3(1.0f,0.0f,0.0f),TypeOfLight::Point });
+	LightProperties sopL= { 0,Vector3(0.0f,0.0f,1.0f), Vector3(0.0f,250.0f,0.0f),Vector3(0.3f,0.3f,0.3f),Vector3(1.0f,1.0f,1.0f),Vector3(1.0f,0.0f,0.0f) };
+	light = Light(sopL);
 	Renderer::Draw(sop,*pMdl,*pShader,*pTex,light);	
 }
 

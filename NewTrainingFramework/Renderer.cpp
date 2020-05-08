@@ -27,6 +27,14 @@ void Renderer::Draw(const SceneObjectProperties& sop, const Model& model, Shader
 	GLint normalLoc = shader.AddAttrib("a_normal");
 	GLCall(glEnableVertexAttribArray(normalLoc));
 	GLCall(glVertexAttribPointer(normalLoc, sizeof(Vector3) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, norm)));
+	
+	/*GLint tanLoc = shader.AddAttrib("a_tan");
+	GLCall(glEnableVertexAttribArray(tanLoc));
+	GLCall(glVertexAttribPointer(normalLoc, sizeof(Vector3) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, tgt)));
+
+	GLint binormLoc = shader.AddAttrib("a_binorm");
+	GLCall(glEnableVertexAttribArray(binormLoc));
+	GLCall(glVertexAttribPointer(normalLoc, sizeof(Vector3) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, binorm)));*/
 
 	GLCall(glEnableVertexAttribArray(shader.textureCoordAttrib));
 	GLCall(glVertexAttribPointer(shader.textureCoordAttrib, sizeof(Vector2) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, uv)));
@@ -56,6 +64,43 @@ void Renderer::Draw(const SceneObjectProperties& sop, const Model& model, Shader
 	GLint lightPosLoc = shader.AddUniform("u_lightPosition");
 	GLCall(glUniform3f(lightPosLoc, light.getPosition().x, light.getPosition().y, light.getPosition().z));
 
+	GLint lightAmbStructLoc =  shader.AddUniform("pLight.ambient");
+	GLint lightDiffStructLoc = shader.AddUniform("pLight.diffuse");
+	GLint lightSpecStructLoc = shader.AddUniform("pLight.specular");
+	GLint lightDirSturctLoc =  shader.AddUniform("pLight.direction");
+	GLint lightPositionSturctLoc =  shader.AddUniform("pLight.position");
+	GLint lightColorSturctLoc =shader.AddUniform("pLight.color");
+	GLint lightConstSturctLoc =shader.AddUniform("pLight.constant");
+	GLint lightLinearSturctLoc = shader.AddUniform("pLight.linear");
+	GLint lightQuadraSturctLoc = shader.AddUniform("pLight.quadratic");
+	GLint lightcutOffSturctLoc = shader.AddUniform("cutOff");
+	GLint lightoutCutOFFSturctLoc = shader.AddUniform("outterCutOff");
+
+												  
+	GLint materialAmbStructLoc = shader.AddUniform("material.ambient");
+	GLint materialDiffStructLoc = shader.AddUniform("material.diffuse");
+	GLint materialSpecStructLoc = shader.AddUniform("material.specular");
+	GLint materialShinStructLoc = shader.AddUniform("material.shininess");
+
+	GLCall(glUniform3f(lightAmbStructLoc, 1.0f, 1.0f, 1.0f));
+	GLCall(glUniform3f(lightDiffStructLoc,1.0f, 1.0f, 1.0f));
+	GLCall(glUniform3f(lightSpecStructLoc,1.0f, 1.0f, 1.0f));
+	GLCall(glUniform3f(lightDirSturctLoc, 0.0f, 0.0f, 1.0f));
+	GLCall(glUniform3f(lightPositionSturctLoc, 0.0f, 0.0f, -122.0f));
+	GLCall(glUniform3f(lightColorSturctLoc, 1.0f, 1.0f, 1.0f));
+	GLCall(glUniform1f(lightConstSturctLoc, 1.0f));
+	GLCall(glUniform1f(lightLinearSturctLoc, 0.014f));
+	GLCall(glUniform1f(lightQuadraSturctLoc, 0.0007f));
+	GLCall(glUniform1f(lightcutOffSturctLoc , 0.91f));
+	GLCall(glUniform1f(lightoutCutOFFSturctLoc, 0.82f));
+
+	GLCall(glUniform3f(materialAmbStructLoc, 1.0f, 1.0f, 1.0f));
+	GLCall(glUniform3f(materialDiffStructLoc, 1.0f, 1.0f, 1.0f));
+	GLCall(glUniform3f(materialSpecStructLoc, 1.0f, 1.0f, 1.0f));
+	GLCall(glUniform1f(materialShinStructLoc, 1.0f));
+
+	//GLcall(glUniform3f(lightStructLoc))
+
 	//Matrices
 
 	//Transform (or Model) matrix calculation
@@ -81,6 +126,8 @@ void Renderer::Draw(const SceneObjectProperties& sop, const Model& model, Shader
 	GLCall(glDrawElements(GL_TRIANGLES, model.GetIb().GetCount(), GL_UNSIGNED_SHORT, nullptr));
 
 	GLCall(glDisableVertexAttribArray(normalLoc));
+	/*GLCall(glDisableVertexAttribArray(tanLoc));
+	GLCall(glDisableVertexAttribArray(binormLoc));*/
 	GLCall(glDisableVertexAttribArray(shader.textureCoordAttrib));
 	GLCall(glDisableVertexAttribArray(shader.positionAttribute));
 	

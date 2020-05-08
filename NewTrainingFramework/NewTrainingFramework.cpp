@@ -17,10 +17,10 @@ int Init(ESContext *esContext)
 }
 
 void Draw(ESContext *esContext)
-{		
-	GLCall(glEnable(GL_DEPTH_TEST));	
-	GLCall(glEnable(GL_BLEND));		
-	GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));	
+{
+	GLCall(glEnable(GL_DEPTH_TEST));
+	GLCall(glEnable(GL_BLEND));
+	GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 	GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 
 	SM->Draw();		

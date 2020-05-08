@@ -2,27 +2,75 @@
 #include "Light.h"
 #include "OpenGLErrorChecking.h"
 
-float Light::ambientLight = 0.5f;
-
-Light::Light(LightProperties sop)
+Light::Light(LightProperties& sop)
 	:
-	sop(sop)	
+	sop(sop)
 {
 }
 
 void Light::ChangeLightType(TypeOfLight type)
 {
-	sop.type = type;
+	switch (type)
+	{
+	case TypeOfLight::Point:
+	{
+		if (this->type != type)
+		{
+			PointLightProperties tempSop;
+			tempSop.direction = sop.direction;
+			tempSop.position = sop.position;
+			tempSop.colorAmb = sop.colorAmb;
+			tempSop.colorDif = sop.colorDif;
+			tempSop.colorSpec = sop.colorSpec;
+			sop = tempSop;
+			//Todo: Change light symbol for when added
+		}
+	}
+	break;
+
+	case TypeOfLight::Directional:
+	{
+		if (this->type != type)
+		{
+			LightProperties tempSop;
+			tempSop.direction = sop.direction;
+			tempSop.position = sop.position;
+			tempSop.colorAmb = sop.colorAmb;
+			tempSop.colorDif = sop.colorDif;
+			tempSop.colorSpec = sop.colorSpec;
+			sop = tempSop;
+			//Todo: Change light symbol for when added
+		}
+	}
+	break;
+
+	case TypeOfLight::SpotLight:
+	{
+		if (this->type != type)
+		{
+			SpotLightProperties tempSop;
+			tempSop.direction = sop.direction;
+			tempSop.position = sop.position;
+			tempSop.colorAmb = sop.colorAmb;
+			tempSop.colorDif = sop.colorDif;
+			tempSop.colorSpec = sop.colorSpec;
+			sop = tempSop;
+			//Todo: Change light symbol for when added
+		}
+	}
+	break;
+
+	}
 }
 
 TypeOfLight Light::getType() const noexcept
 {
-	return sop.type;
+	return type;
 }
 
 const Vector3& Light::getPosition() const noexcept
 {
-	return sop.translation;
+	return sop.position;
 }
 
 const Vector3& Light::getColorDif() const noexcept
