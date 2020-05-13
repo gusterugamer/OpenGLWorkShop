@@ -5,11 +5,16 @@
 #include "ResourceManager.h"
 #include "IndexBuffer.h"
 #include "VertexBuffer.h"
-#include "Light.h"
+
+struct Material {
+	Vector3 ambiental = { 1.0f,1.0,1.0 };
+	Vector3 diffuse = { 1.0f,1.0,1.0 };
+	Vector3 specular = { 1.0f,1.0,1.0 };
+	float shininess = 0.5f;
+};
 
 struct SceneObjectProperties {
 	//proprietatile unui obiect
-
 	int modelId;
 	int shaderId;
 	std::string type;
@@ -29,12 +34,12 @@ struct SceneObjectProperties {
 	Vector3 color = { 1.0f, 1.0f, 1.0f }; //culoare implicit daca modelul nu are textura incarcata(rosu)
 	float reflectivity = 0.0f; //using before adding material class
 	float shineDamper = 0.0f; //using before adding material class
+	Material mat;
 };
 
 class SceneObject
 {
-private:
-	Light light;
+
 protected:	
 	//Pointeri catre resurele incarcate
 	std::shared_ptr<Model> pMdl = nullptr;

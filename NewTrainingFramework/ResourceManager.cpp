@@ -186,5 +186,5 @@ ResourceManager::ResourceManager()
 ResourceManager::~ResourceManager()
 {	
 	delete instance;
-	instance = nullptr;
+	instance = nullptr;	
 }

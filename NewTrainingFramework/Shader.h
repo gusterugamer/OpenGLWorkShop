@@ -17,8 +17,8 @@ public:
 
 	GLint AddAttrib(const char* name);
 
-	GLint AddUniform(const char * name);
-	
+	GLint AddUniform(const char * name);	
+
 	GLint Shader::GetProgramId();
 
 	GLint positionAttribute;	

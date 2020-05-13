@@ -198,7 +198,7 @@
     <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="Model.h" />
-    <ClInclude Include="OpenGLErrorChecking.h" />
+    <ClInclude Include="DebugModeFunctions.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="ResourceManager.h" />
@@ -234,6 +234,8 @@
     <None Include="..\Resources\Models\Woman2.nfg" />
     <None Include="..\Resources\Shaders\fire.fs" />
     <None Include="..\Resources\Shaders\fire.vs" />
+    <None Include="..\Resources\Shaders\lights.fs" />
+    <None Include="..\Resources\Shaders\lights.vs" />
     <None Include="..\Resources\Shaders\modelShader.fs" />
     <None Include="..\Resources\Shaders\modelShader.vs" />
     <None Include="..\..\Readme.doc" />

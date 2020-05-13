@@ -138,6 +138,7 @@ public:
 	Matrix() {}
 	Matrix(GLfloat val);
 	Matrix(Matrix & mat);
+	Matrix(const Matrix& mat);
 
 	// Matrix operations
 	Matrix & SetZero();

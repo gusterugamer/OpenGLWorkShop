@@ -2,7 +2,7 @@
 #include "Texture.h"
 #include "../Utilities/TGA.h"
 #include <iostream>
-#include "OpenGLErrorChecking.h"
+#include "DebugModeFunctions.h"
 #include "ResourceManager.h"
 
 const GLint Texture::GetTextureId() const

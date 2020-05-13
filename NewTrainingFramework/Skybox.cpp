@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "Skybox.h"
-#include "OpenGLErrorChecking.h"
+#include "DebugModeFunctions.h"
 #include "SceneManager.h"
 #include "Renderer.h"
 

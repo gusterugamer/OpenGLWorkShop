@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "IndexBuffer.h"
 #include "../Utilities/esUtil.h"
-#include "OpenGLErrorChecking.h"
+#include "DebugModeFunctions.h"
 
 IndexBuffer::IndexBuffer(const void * data, unsigned int count)
 	:m_RendererID(0), count(count)

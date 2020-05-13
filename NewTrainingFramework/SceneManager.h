@@ -3,15 +3,15 @@
 #include "Resources.h"
 #include "Camera.h"
 #include "SceneObject.h" 
-#include "OpenGLErrorChecking.h"
+#include "DebugModeFunctions.h"
 
 class SceneManager {
 private:
 
 	//Resurse in care se citesc valorile din XML
 	std::unordered_map<int, std::shared_ptr<Camera>> cameraMap;	
-	std::unordered_map<int, std::shared_ptr<SceneObject>> sceneObjectsMap;	
-	std::unordered_map<int, std::shared_ptr<LightResource>> lightMap;
+	std::unordered_map<int, std::shared_ptr<SceneObject>> sceneObjectsMap;		
+	std::vector<std::shared_ptr<LightProperties>> lights;	
 
 	BackgroundColorResource bckgroundResource;
 	AmbientalLightResource ambientLightResource;
@@ -35,5 +35,6 @@ public:
 	void Draw();
 	void Update(ESContext* esContext,const float& deltaTime);
 	std::shared_ptr<Camera> GetCurrentCamera();	
+	const std::vector<std::shared_ptr<LightProperties>>& getLights();
 	~SceneManager(); 	
 };

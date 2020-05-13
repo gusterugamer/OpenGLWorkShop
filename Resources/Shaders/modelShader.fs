@@ -60,7 +60,7 @@ float quadratic;
 
 //uniform DirLight light;
 uniform Material material;
-uniform SpotLight pLight;
+uniform PointLight pLight;
 
 vec3 CalcSpotLight (SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
 {	
@@ -147,7 +147,7 @@ void main()
 	 vec4 texColor = texture2D(u_texture,v_uv);
 	  
 	// vec4 finalColor = vec4(CalcDirLight(light,normalizedNormal,normalizedViewDir) * texColor.xyz,1.0);	
-	 vec4 finalColor = vec4(CalcSpotLight(pLight,normalizedNormal,v_FragPos,normalizedViewDir) * texColor.xyz,1.0);	
+	 vec4 finalColor = vec4(CalcPointLight(pLight,normalizedNormal,v_FragPos,normalizedViewDir) * texColor.xyz,1.0);	
 
 	gl_FragColor = finalColor;	
 }

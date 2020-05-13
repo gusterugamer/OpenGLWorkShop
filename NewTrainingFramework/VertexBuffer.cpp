@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "VertexBuffer.h"
 #include "../Utilities/esUtil.h"
-#include "OpenGLErrorChecking.h"
+#include "DebugModeFunctions.h"
 #include "Vertex.h"
 
 VertexBuffer::VertexBuffer(const void * data, unsigned int size)

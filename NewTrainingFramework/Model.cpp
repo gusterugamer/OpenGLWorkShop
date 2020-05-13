@@ -3,7 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include <limits.h>
-#include "OpenGLErrorChecking.h"
+#include "DebugModeFunctions.h"
 #include <exception>
 
 
@@ -19,7 +19,6 @@ Model::Model(const std::string& path)
 	vb = { verticies.data(), nrvertces };
 	ib = { indicies.data(), nrindicies };	
 }
-
 
 void Model::ReadModelFile(const std::string& file)
 {

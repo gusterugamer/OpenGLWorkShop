@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include "Renderer.h"
 #include "SceneManager.h"
-#include "OpenGLErrorChecking.h"
+#include "DebugModeFunctions.h"
 #include <string>
 
-void Renderer::Draw(const SceneObjectProperties& sop, const Model& model, Shader& shader, const Texture& tex, Light& light)
+void Renderer::Draw(const SceneObjectProperties& sop, const Model& model, Shader& shader, const Texture& tex)
 {
 	const Matrix& viewMatrix = SceneManager::GetInstance()->GetCurrentCamera()->GetViewMatrix();
 	const Matrix& perspectiveMatrix = SceneManager::GetInstance()->GetCurrentCamera()->GetPerspectiveMatrix();
@@ -38,66 +38,20 @@ void Renderer::Draw(const SceneObjectProperties& sop, const Model& model, Shader
 
 	GLCall(glEnableVertexAttribArray(shader.textureCoordAttrib));
 	GLCall(glVertexAttribPointer(shader.textureCoordAttrib, sizeof(Vector2) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, uv)));
+
+	GLint ambientalLoc = shader.AddUniform("material.ambient");
+	GLint diffuseLoc = shader.AddUniform("material.diffuse");
+	GLint specularLoc = shader.AddUniform("material.specular");
+	GLint shininessLoc = shader.AddUniform("material.shininess");
+
+	GLCall(glUniform3f(ambientalLoc, sop.mat.ambiental.x, sop.mat.ambiental.y, sop.mat.ambiental.z));
+	GLCall(glUniform3f(diffuseLoc, sop.mat.diffuse.x, sop.mat.diffuse.y, sop.mat.diffuse.z));
+	GLCall(glUniform3f(specularLoc, sop.mat.specular.x, sop.mat.specular.y, sop.mat.specular.z));
+	GLCall(glUniform1f(shininessLoc, sop.mat.shininess));
 	
 	//Light
 
-	//Object properties related to light reflection
-	GLint reflectLoc = shader.AddUniform("u_reflectivity");
-	GLint shineDumpLoc = shader.AddUniform("u_shineDamper");
-	GLCall(glUniform1f(reflectLoc, sop.reflectivity));
-	GLCall(glUniform1f(shineDumpLoc, sop.shineDamper));
-
-	//Sending camera position to shader for reflection calculation
-	GLint cameraPosLoc = shader.AddUniform("u_cameraPos");
-	GLCall(glUniform3f(cameraPosLoc, SceneManager::GetInstance()->GetCurrentCamera()->GetPosition().x, 
-									 SceneManager::GetInstance()->GetCurrentCamera()->GetPosition().y,
-									 SceneManager::GetInstance()->GetCurrentCamera()->GetPosition().z));
-
-	//LightColor
-	GLint lightColorDifLoc = shader.AddUniform("u_lightColorDif");
-	GLCall(glUniform3f(lightColorDifLoc, light.getColorDif().x, light.getColorDif().y, light.getColorDif().z));	
-	
-	GLint lightColorSpecLoc = shader.AddUniform("u_lightColorSpec");
-	GLCall(glUniform3f(lightColorDifLoc, light.getColorSpec().x, light.getColorSpec().y, light.getColorSpec().z));
-
-	//LightPosition
-	GLint lightPosLoc = shader.AddUniform("u_lightPosition");
-	GLCall(glUniform3f(lightPosLoc, light.getPosition().x, light.getPosition().y, light.getPosition().z));
-
-	GLint lightAmbStructLoc =  shader.AddUniform("pLight.ambient");
-	GLint lightDiffStructLoc = shader.AddUniform("pLight.diffuse");
-	GLint lightSpecStructLoc = shader.AddUniform("pLight.specular");
-	GLint lightDirSturctLoc =  shader.AddUniform("pLight.direction");
-	GLint lightPositionSturctLoc =  shader.AddUniform("pLight.position");
-	GLint lightColorSturctLoc =shader.AddUniform("pLight.color");
-	GLint lightConstSturctLoc =shader.AddUniform("pLight.constant");
-	GLint lightLinearSturctLoc = shader.AddUniform("pLight.linear");
-	GLint lightQuadraSturctLoc = shader.AddUniform("pLight.quadratic");
-	GLint lightcutOffSturctLoc = shader.AddUniform("cutOff");
-	GLint lightoutCutOFFSturctLoc = shader.AddUniform("outterCutOff");
-
-												  
-	GLint materialAmbStructLoc = shader.AddUniform("material.ambient");
-	GLint materialDiffStructLoc = shader.AddUniform("material.diffuse");
-	GLint materialSpecStructLoc = shader.AddUniform("material.specular");
-	GLint materialShinStructLoc = shader.AddUniform("material.shininess");
-
-	GLCall(glUniform3f(lightAmbStructLoc, 1.0f, 1.0f, 1.0f));
-	GLCall(glUniform3f(lightDiffStructLoc,1.0f, 1.0f, 1.0f));
-	GLCall(glUniform3f(lightSpecStructLoc,1.0f, 1.0f, 1.0f));
-	GLCall(glUniform3f(lightDirSturctLoc, 0.0f, 0.0f, 1.0f));
-	GLCall(glUniform3f(lightPositionSturctLoc, 0.0f, 0.0f, -122.0f));
-	GLCall(glUniform3f(lightColorSturctLoc, 1.0f, 1.0f, 1.0f));
-	GLCall(glUniform1f(lightConstSturctLoc, 1.0f));
-	GLCall(glUniform1f(lightLinearSturctLoc, 0.014f));
-	GLCall(glUniform1f(lightQuadraSturctLoc, 0.0007f));
-	GLCall(glUniform1f(lightcutOffSturctLoc , 0.91f));
-	GLCall(glUniform1f(lightoutCutOFFSturctLoc, 0.82f));
-
-	GLCall(glUniform3f(materialAmbStructLoc, 1.0f, 1.0f, 1.0f));
-	GLCall(glUniform3f(materialDiffStructLoc, 1.0f, 1.0f, 1.0f));
-	GLCall(glUniform3f(materialSpecStructLoc, 1.0f, 1.0f, 1.0f));
-	GLCall(glUniform1f(materialShinStructLoc, 1.0f));
+	//Object properties related to light reflection	
 
 	//GLcall(glUniform3f(lightStructLoc))
 
@@ -270,6 +224,61 @@ void Renderer::DrawSkyBox(const Matrix& modelMatrix, Model& model, Shader& shade
 	GLCall(glDisableVertexAttribArray(shader.positionAttribute));
 }
 
+void Renderer::DrawDebug(const SceneObjectProperties& sop, const VertexBuffer& vb, const IndexBuffer& ib, Shader& shader, const Texture& tex)
+{
+	const Matrix& viewMatrix = SceneManager::GetInstance()->GetCurrentCamera()->GetViewMatrix();
+	const Matrix& perspectiveMatrix = SceneManager::GetInstance()->GetCurrentCamera()->GetPerspectiveMatrix();
 
+	GLCall(glUseProgram(shader.GetProgramId()));
 
+	//Buffers
+	vb.Bind();
+	ib.Bind();
 
+	//Texture
+	GLCall(glActiveTexture(GL_TEXTURE0));
+	GLCall(glUniform1i(shader.textureUniform, 0));
+	tex.Bind();
+
+	//ModelAttributes
+	GLCall(glEnableVertexAttribArray(shader.positionAttribute));
+	GLCall(glVertexAttribPointer(shader.positionAttribute, sizeof(Vector3) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, pos)));
+
+	GLCall(glEnableVertexAttribArray(shader.textureCoordAttrib));
+	GLCall(glVertexAttribPointer(shader.textureCoordAttrib, sizeof(Vector2) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, uv)));
+
+	GLint colorLoc = shader.AddAttrib("a_color");
+	GLCall(glEnableVertexAttribArray(colorLoc));
+	GLCall(glVertexAttribPointer(colorLoc, sizeof(Vector2) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, color)));
+
+	Matrix SM;
+	Matrix TM;
+	Matrix modelMatrix;
+	
+	SM = SM.SetScale((Vector3)sop.scale);
+	TM = TM.SetTranslation((Vector3)sop.translation);
+
+	modelMatrix = SM * TM ;
+
+	modelMatrix.m[0][0] = viewMatrix.m[0][0];
+	modelMatrix.m[0][1] = viewMatrix.m[1][0];
+	modelMatrix.m[0][2] = viewMatrix.m[2][0];
+	modelMatrix.m[1][0] = viewMatrix.m[0][1];
+	modelMatrix.m[1][1] = viewMatrix.m[1][1];
+	modelMatrix.m[1][2] = viewMatrix.m[2][1];
+	modelMatrix.m[2][0] = viewMatrix.m[0][2];
+	modelMatrix.m[2][1] = viewMatrix.m[1][2];
+	modelMatrix.m[2][2] = viewMatrix.m[2][2];
+
+	Matrix LightMatrix = modelMatrix * (Matrix)(viewMatrix);
+
+	GLCall(glUniformMatrix4fv(shader.AddUniform("u_LightMatrix"), 1, GL_FALSE, (GLfloat*)LightMatrix.m));
+	GLCall(glUniformMatrix4fv(shader.AddUniform("u_PerspectiveMatrix"), 1, GL_FALSE, (GLfloat*)perspectiveMatrix.m));
+	//DrawCall
+	GLCall(glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_SHORT, nullptr));
+
+	GLCall(glDisableVertexAttribArray(shader.textureCoordAttrib));
+	GLCall(glDisableVertexAttribArray(shader.positionAttribute));
+	GLCall(glDisableVertexAttribArray(colorLoc));
+
+}

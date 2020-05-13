@@ -62,3 +62,46 @@ struct DebugSettings
 	Vector3 camOYcolor;
 	Vector3 camOZcolor;
 };
+
+//Defineste tipul de lumini
+enum class TypeOfLight {
+	Point = 0,
+	Directional = 1,
+	Spot = 2,
+};
+
+//structura generala ce contine proprietatile comune ale luminilor
+struct LightProperties {
+	Vector3 ambient;
+	Vector3 diffuse;
+	Vector3 specular;
+	Vector3 color;
+	TypeOfLight type;
+};
+
+//structuri de deriva din LightProperties ce contin particularitatile fiecarei lumini in parte
+struct DirLightProperties : LightProperties {
+	Vector3 direction;
+};
+
+struct PointLightProperties : LightProperties
+{
+	Vector3 position;
+
+	float constant = 1.0f;
+	float linear = 0.09f;
+	float quadratic = 0.032f;
+};
+
+struct SpotLightProperties : LightProperties
+{
+	Vector3 direction;
+	Vector3 position;
+
+	float constant;
+	float linear;
+	float quadratic;
+
+	float cutOff;
+	float outterCutOff;
+};

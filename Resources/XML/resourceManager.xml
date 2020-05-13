@@ -32,6 +32,10 @@
       <vs>../Resources/Shaders/skybox.vs</vs>
       <fs>../Resources/Shaders/skybox.fs</fs>
     </shader>
+    <shader id="7">
+      <vs>../Resources/Shaders/lights.vs</vs>
+      <fs>../Resources/Shaders/lights.fs</fs>
+    </shader>
 		<!-- si aici se adauga toate shaderele -->
 	</shaders>
 	<textures>
@@ -100,6 +104,30 @@
     </texture>
     <texture id="10" type="cube">
       <path>../Resources/Textures/envMap.tga</path>
+      <min_filter>LINEAR</min_filter>
+      <mag_filter>LINEAR</mag_filter>
+      <wrap_s>CLAMP_TO_EDGE</wrap_s>
+      <wrap_t>CLAMP_TO_EDGE</wrap_t>
+    </texture>
+    
+    <texture id="20" type="2d">
+      <path>../Resources/Textures/DirectionalLight.tga</path>
+      <min_filter>LINEAR</min_filter>
+      <mag_filter>LINEAR</mag_filter>
+      <wrap_s>CLAMP_TO_EDGE</wrap_s>
+      <wrap_t>CLAMP_TO_EDGE</wrap_t>
+    </texture>   
+
+    <texture id="21" type="2d">
+      <path>../Resources/Textures/PointLight.tga</path>
+      <min_filter>LINEAR</min_filter>
+      <mag_filter>LINEAR</mag_filter>
+      <wrap_s>CLAMP_TO_EDGE</wrap_s>
+      <wrap_t>CLAMP_TO_EDGE</wrap_t>
+    </texture>
+
+    <texture id="22" type="2d">
+      <path>../Resources/Textures/SpotLight.tga</path>
       <min_filter>LINEAR</min_filter>
       <mag_filter>LINEAR</mag_filter>
       <wrap_s>CLAMP_TO_EDGE</wrap_s>

@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "Fire.h"
-#include "OpenGLErrorChecking.h"
+#include "DebugModeFunctions.h"
 #include "Renderer.h"
 
 Fire::Fire(FireProperties & sop)

@@ -121,8 +121,11 @@ char * LoadTGA( const char * szFileName, int * width, int * height, int * bpp )
     
     FILE * f;
 	
-	if (fopen_s(&f, szFileName, "rb") != 0)	
-		return NULL;	
+    if (fopen_s(&f, szFileName, "rb") != 0)
+    {
+        return NULL;
+        std::cout << "File " << szFileName << " could not be open!";
+    }
 	
 
     TGA_HEADER header;
@@ -136,12 +139,14 @@ char * LoadTGA( const char * szFileName, int * width, int * height, int * bpp )
     {
         fclose( f );
         return NULL;
+        std::cout << "File " << szFileName << " could not be open!";
     }
 
     if ( header.bits != 24 && header.bits != 32 )
     {
         fclose( f );
         return NULL;
+        std::cout << "File " << szFileName << " could not be open!";
     }
 
     int bufferSize = fileLen - sizeof( header ) - header.identsize;

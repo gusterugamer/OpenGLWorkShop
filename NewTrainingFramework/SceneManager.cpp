@@ -5,6 +5,8 @@
 #include "Terrain.h"
 #include "Fire.h"
 #include "Skybox.h"
+#include "Light.h"
+#include "Renderer.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -211,9 +213,7 @@ void SceneManager::ReadXML()
 						for (xmlnode* ppNode = pNode->first_node("lights")->first_node("light"); ppNode; ppNode = ppNode->next_sibling())
 						{
 							OR.lights.push_back(std::stoi(ppNode->value()));							
-						}	
-						OR.reflectivity = std::stof(pNode->first_node("reflectivity")->value());
-						OR.shineDamper= std::stof(pNode->first_node("shineDamper")->value());
+						}							
 						sceneObjectsMap[tempID] = std::make_shared<SceneObject>(OR);
 					}	
 					else if (std::string(pNode->first_node("type")->value()) == "fire")
@@ -283,23 +283,9 @@ void SceneManager::ReadXML()
 					sceneObjectsMap[tempID] = std::make_shared<Skybox>(sp);
 					}
 				}
-			}
-			//Pointer catre subnodul ambientLight
-			pRoot_SubNode = pRoot_node->first_node("ambientalLight");
+			}			
 			//Verificare daca exista subnodul ambientalLight
-			if (!pRoot_SubNode)
-			{
-				std::cout << "Subnod ambientalLight' doesn't exist in Scene Manager XML file";
-			}
-			else
-			{
-				//Citire culoare ambiental Light din XML
-				ambientLightResource.color.x = std::stof(pRoot_SubNode->first_node("color")->first_node("r")->value());
-				ambientLightResource.color.y = std::stof(pRoot_SubNode->first_node("color")->first_node("g")->value());
-				ambientLightResource.color.z = std::stof(pRoot_SubNode->first_node("color")->first_node("b")->value());
-				//Citire ration ambiental Light din XML
-				ambientLightResource.ratio = std::stof(pRoot_SubNode->first_node("ratio")->value());
-			}
+
 			//Pointer catre subnodul lights
 			pRoot_SubNode = pRoot_node->first_node("lights");
 			//Verificare daca exista subnodul Light
@@ -309,25 +295,134 @@ void SceneManager::ReadXML()
 			}
 			else
 			{
+				Vector3 ambiental;
+				int shaderId = 7;
+				if (xmlnode* pSubNode = pRoot_SubNode->first_node("ambiental"))
+				{					
+					ambiental.x = std::stof(pSubNode->first_node("color")->first_node("r")->value());
+					ambiental.y = std::stof(pSubNode->first_node("color")->first_node("b")->value());
+					ambiental.z = std::stof(pSubNode->first_node("color")->first_node("g")->value());
+				}				
+				if (xmlnode* pSubNode = pRoot_SubNode->first_node("shaderId"))
+				{
+					shaderId = std::stoi(pSubNode->value());
+				}
 				for (xmlnode* ppNode = pRoot_SubNode->first_node("light"); ppNode; ppNode = ppNode->next_sibling())
 				{
 					//Variabila temporara ID pentru construirea vectorului lights
 					tempID = std::stoi(ppNode->first_attribute("id")->value());
+					std::string type = ppNode->first_attribute("type")->value();
 					//Resursa temporara care va fi mutata in vectorul de pointeri lightMap;
-					std::unique_ptr<LightResource> LR = std::make_unique<LightResource>();
-					//Citire associatedObject din XML si pasare catre resursa temporara
-					LR->associatedObject = std::stoi(ppNode->first_node("associatedObject")->value());
-					//Citire difuseColor din XML si pasare catre resursa temporara
-					LR->difuseColor.x = std::stof(ppNode->first_node("diffuseColor")->first_node("r")->value());
-					LR->difuseColor.y = std::stof(ppNode->first_node("diffuseColor")->first_node("g")->value());
-					LR->difuseColor.z = std::stof(ppNode->first_node("diffuseColor")->first_node("b")->value());
-					//Citire specularColor din XML si pasare catre resursa temporara
-					LR->specularColor.x = std::stof(ppNode->first_node("specularColor")->first_node("r")->value());
-					LR->specularColor.y = std::stof(ppNode->first_node("specularColor")->first_node("g")->value());
-					LR->specularColor.z = std::stof(ppNode->first_node("specularColor")->first_node("b")->value());
-					//Citire type din XML si pasare catre resursa temporara
-					LR->type = ppNode->first_node("type")->value();
-					lightMap[tempID] = std::move(LR);
+
+					if (type == "point")
+					{
+						std::shared_ptr<PointLightProperties> LR = std::make_shared<PointLightProperties>();
+						std::unique_ptr<SceneObjectProperties> sop = std::make_unique<SceneObjectProperties>();
+
+						//Lumina ambianta
+						LR->ambient.x = ambiental.x;
+						LR->ambient.y = ambiental.y;
+						LR->ambient.z = ambiental.z;
+						//Citire difuseColor din XML si pasare catre resursa temporara
+						LR->diffuse.x = std::stof(ppNode->first_node("diffuseColor")->first_node("r")->value());
+						LR->diffuse.y = std::stof(ppNode->first_node("diffuseColor")->first_node("g")->value());
+						LR->diffuse.z = std::stof(ppNode->first_node("diffuseColor")->first_node("b")->value());
+						//Citire specularColor din XML si pasare catre resursa temporara
+						LR->specular.x = std::stof(ppNode->first_node("specularColor")->first_node("r")->value());
+						LR->specular.y = std::stof(ppNode->first_node("specularColor")->first_node("g")->value());
+						LR->specular.z = std::stof(ppNode->first_node("specularColor")->first_node("b")->value());
+						
+						//Citire type din XML si pasare catre resursa temporara
+						LR->type = TypeOfLight::Point;					
+
+						int id = std::stoi(ppNode->first_node("id")->value());
+						sop->name = ppNode->first_node("name")->value();
+						sop->shaderId = shaderId;						
+						sop->textureId = std::stoi(ppNode->first_node("textureId")->value());
+						sop->translation.x = std::stof(ppNode->first_node("translation")->first_node("x")->value());
+						sop->translation.y = std::stof(ppNode->first_node("translation")->first_node("y")->value());
+						sop->translation.z = std::stof(ppNode->first_node("translation")->first_node("z")->value());
+						LR->position = sop->translation;
+						sop->scale = Vector3(1.0, 1.0, 1.0);
+						sceneObjectsMap[id] = std::make_shared<Light>(*sop.release(), *LR);		
+						lights.push_back(LR);
+					}					
+
+					else if (type == "spot")
+					{
+						std::shared_ptr<SpotLightProperties> LR = std::make_shared<SpotLightProperties>();
+						std::unique_ptr<SceneObjectProperties> sop = std::make_unique<SceneObjectProperties>();
+
+						//Lumina ambianta
+						LR->ambient.x = ambiental.x;
+						LR->ambient.y = ambiental.y;
+						LR->ambient.z = ambiental.z;
+						//Citire difuseColor din XML si pasare catre resursa temporara
+						LR->diffuse.x = std::stof(ppNode->first_node("diffuseColor")->first_node("r")->value());
+						LR->diffuse.y = std::stof(ppNode->first_node("diffuseColor")->first_node("g")->value());
+						LR->diffuse.z = std::stof(ppNode->first_node("diffuseColor")->first_node("b")->value());
+						//Citire specularColor din XML si pasare catre resursa temporara
+						LR->specular.x = std::stof(ppNode->first_node("specularColor")->first_node("r")->value());
+						LR->specular.y = std::stof(ppNode->first_node("specularColor")->first_node("g")->value());
+						LR->specular.z = std::stof(ppNode->first_node("specularColor")->first_node("b")->value());
+						LR->cutOff = std::stof(ppNode->first_node("cutOff")->value());
+						LR->outterCutOff = std::stof(ppNode->first_node("outterCutOff")->value());
+						LR->direction.x = std::stof(ppNode->first_node("direction")->first_node("x")->value());
+						LR->direction.y = std::stof(ppNode->first_node("direction")->first_node("y")->value());
+						LR->direction.z = std::stof(ppNode->first_node("direction")->first_node("z")->value());
+
+						//Citire type din XML si pasare catre resursa temporara
+						LR->type = TypeOfLight::Spot;
+
+						int id = std::stoi(ppNode->first_node("id")->value());
+						sop->name = ppNode->first_node("name")->value();
+						sop->shaderId = shaderId;
+						sop->textureId = std::stoi(ppNode->first_node("textureId")->value());
+						sop->translation.x = std::stof(ppNode->first_node("translation")->first_node("x")->value());
+						sop->translation.y = std::stof(ppNode->first_node("translation")->first_node("y")->value());
+						sop->translation.z = std::stof(ppNode->first_node("translation")->first_node("z")->value());
+						LR->position = sop->translation;
+						sop->scale = Vector3(1.0, 1.0, 1.0);
+						sceneObjectsMap[id] = std::make_shared<Light>(*sop.release(), *LR);
+						lights.push_back(LR);
+					}
+					else if (type == "directional")
+					{
+						std::shared_ptr<DirLightProperties> LR = std::make_shared<DirLightProperties>();
+						std::unique_ptr<SceneObjectProperties> sop = std::make_unique<SceneObjectProperties>();
+
+						//Lumina ambianta
+						LR->ambient.x = ambiental.x;
+						LR->ambient.y = ambiental.y;
+						LR->ambient.z = ambiental.z;
+						//Citire difuseColor din XML si pasare catre resursa temporara
+						LR->diffuse.x = std::stof(ppNode->first_node("diffuseColor")->first_node("r")->value());
+						LR->diffuse.y = std::stof(ppNode->first_node("diffuseColor")->first_node("g")->value());
+						LR->diffuse.z = std::stof(ppNode->first_node("diffuseColor")->first_node("b")->value());
+						//Citire specularColor din XML si pasare catre resursa temporara
+						LR->specular.x = std::stof(ppNode->first_node("specularColor")->first_node("r")->value());
+						LR->specular.y = std::stof(ppNode->first_node("specularColor")->first_node("g")->value());
+						LR->specular.z = std::stof(ppNode->first_node("specularColor")->first_node("b")->value());
+
+						LR->direction.x = std::stof(ppNode->first_node("direction")->first_node("x")->value());
+						LR->direction.y = std::stof(ppNode->first_node("direction")->first_node("y")->value());
+						LR->direction.z = std::stof(ppNode->first_node("direction")->first_node("z")->value());
+
+						//Citire type din XML si pasare catre resursa temporara
+						LR->type = TypeOfLight::Directional;
+
+						int id = std::stoi(ppNode->first_node("id")->value());
+						sop->name = ppNode->first_node("name")->value();
+						sop->shaderId = shaderId;
+						sop->textureId = std::stoi(ppNode->first_node("textureId")->value());
+						sop->translation.x = std::stof(ppNode->first_node("translation")->first_node("x")->value());
+						sop->translation.y = std::stof(ppNode->first_node("translation")->first_node("y")->value());
+						sop->translation.z = std::stof(ppNode->first_node("translation")->first_node("z")->value());						
+						
+						sop->scale = Vector3(1.0, 1.0, 1.0);
+						sceneObjectsMap[id] = std::make_shared<Light>(*sop.release(), *LR);
+						lights.push_back(LR);
+					}
 				}
 			}
 			//Citire active camera din XML
@@ -380,6 +475,11 @@ void SceneManager::Update(ESContext* esContext,const float& deltaTime)
 std::shared_ptr<Camera> SceneManager::GetCurrentCamera()
 {
 	return cameraMap[activateCameraId];
+}
+
+const std::vector<std::shared_ptr<LightProperties>>& SceneManager::getLights()
+{
+	return lights;
 }
 
 SceneManager::~SceneManager()
