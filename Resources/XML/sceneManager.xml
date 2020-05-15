@@ -50,8 +50,8 @@
       </textures>
       <position>
         <!-- translatia -->
-        <x>85</x>
-        <y>100</y>
+        <x>55</x>
+        <y>0</y>
         <z>50</z>
       </position>
       <rotation>
@@ -298,28 +298,37 @@
      </ambiental>   
     <shaderId>7</shaderId>    
 
-    <light id="15" type="point">       
-			<diffuseColor>
-				<r>1.0</r>
-				<g>1.0</g>
-				<b>1.0</b>
-			</diffuseColor>
-			<specularColor>
-				<r>1.0</r>
-				<g>1.0</g>
-				<b>1.0</b>
-			</specularColor>			
-      <name>PointLight</name>
-      <id>20</id>
-      <textureId>21</textureId>
+    <light id="17" type="spot">
+      <diffuseColor>
+        <r>1.0</r>
+        <g>1.0</g>
+        <b>1.0</b>
+      </diffuseColor>
+      <specularColor>
+        <r>1.0</r>
+        <g>1.0</g>
+        <b>1.0</b>
+      </specularColor>
+      <name>SpotLight</name>
+      <id>22</id>
+      <textureId>22</textureId>
       <translation>
         <x>0.0</x>
-        <y>0.0</y>
+        <y>1.0</y>
         <z>0.0</z>
-      </translation>    
-    </light>
-
-    <light id="16" type="directional">
+      </translation>
+      <direction>
+        <x>0.0</x>
+        <y>0.0</y>
+        <z>1.0</z>
+      </direction>
+      <cutOff>0.97629</cutOff>
+      <outterCutOff>0.95371</outterCutOff>
+      <intensity>50.0</intensity>
+      <range>50.0</range>
+    </light>    
+     
+       <light id="16" type="directional">
       <diffuseColor>
         <r>1.0</r>
         <g>1.0</g>
@@ -343,9 +352,10 @@
         <y>0.0</y>
         <z>1.0</z>
       </direction>
+      <intensity>1.0</intensity>
     </light>
-
-    <light id="17" type="spot">
+    
+  <light id="16" type="point">
       <diffuseColor>
         <r>1.0</r>
         <g>1.0</g>
@@ -357,21 +367,17 @@
         <b>1.0</b>
       </specularColor>
       <name>SpotLight</name>
-      <id>22</id>
-      <textureId>22</textureId>
+      <id>20</id>
+      <textureId>21</textureId>
       <translation>
         <x>0.0</x>
-        <y>1.0</y>
-        <z>10.0</z>
-      </translation>
-      <direction>
-        <x>0.0</x>
-        <y>0.0</y>
-        <z>1.0</z>
-      </direction>
-      <cutOff>0.91</cutOff>
-      <outterCutOff>0.82</outterCutOff>
+        <y>5.0</y>
+        <z>15.0</z>
+      </translation>      
+      <intensity>100.0</intensity>
+    <range>50.0</range>
     </light>
+    
   </lights>
 	
 	<debugSettings>

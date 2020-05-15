@@ -7,7 +7,7 @@ Light::Light(SceneObjectProperties& sop, LightProperties& lp)
 	:
 	sop(sop),
 	lp(lp)
-{
+{	
 	pMdl = nullptr;
 	pTex = ResourceManager::GetInstance()->loadTexture(sop.textureId);
 	pShader = ResourceManager::GetInstance()->loadShader(sop.shaderId);
@@ -84,17 +84,17 @@ void Light::Update(ESContext* esContext, const float& deltaTime)
 }
 
 void Light::BuildQuad()
-{
-	for (float y = 0; y < 2; y++)
-		for (float x = 0; x < 2; x++)
+{	
+	for (float y = 1; y < 3; y++)
+		for (float x = 1; x < 3; x++)
 		{
 			Vertex v;
 			v.pos = Vector3(
-				((x - (float)std::ceil(1 / 2)) * quadDimension),
-				((y - (float)std::ceil(1 / 2)) * quadDimension),
+				(x  + (float)std::pow(-1,x) *(float)quadDimension/2),
+				(y  + (float)std::pow(-1,y) *(float)quadDimension/2),
 				0
 			);
-			v.uv = Vector2(x, y);
+			v.uv = Vector2(x-1, y-1);
 			v.color = Vector3(1.0, 1.0, 1.0);
 			vert.push_back(v);
 			
@@ -102,10 +102,10 @@ void Light::BuildQuad()
 
 	indicies.push_back(0);
 	indicies.push_back(1);
-	indicies.push_back(3);
-	indicies.push_back(3);
 	indicies.push_back(2);
-	indicies.push_back(0);
+	indicies.push_back(1);
+	indicies.push_back(2);
+	indicies.push_back(3);
 
 	vb = { vert.data(),vert.size() };
 	ib = { indicies.data(),indicies.size() };	

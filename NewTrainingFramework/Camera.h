@@ -2,7 +2,7 @@
 #include "Globals.h"
 #include "../Utilities/Math.h"
 
-class Camera {	
+class Camera {
 private:	
     const GLfloat ratio = (GLfloat)(Globals::screenWidth / Globals::screenHeight);
 	GLfloat moveSpeed;

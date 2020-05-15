@@ -316,7 +316,7 @@ void SceneManager::ReadXML()
 
 					if (type == "point")
 					{
-						std::shared_ptr<PointLightProperties> LR = std::make_shared<PointLightProperties>();
+						std::shared_ptr<LightProperties> LR = std::make_shared<LightProperties>();
 						std::unique_ptr<SceneObjectProperties> sop = std::make_unique<SceneObjectProperties>();
 
 						//Lumina ambianta
@@ -331,6 +331,8 @@ void SceneManager::ReadXML()
 						LR->specular.x = std::stof(ppNode->first_node("specularColor")->first_node("r")->value());
 						LR->specular.y = std::stof(ppNode->first_node("specularColor")->first_node("g")->value());
 						LR->specular.z = std::stof(ppNode->first_node("specularColor")->first_node("b")->value());
+						LR->range = std::stof(ppNode->first_node("range")->value());						
+						LR->intensity = std::stof(ppNode->first_node("intensity")->value());						
 						
 						//Citire type din XML si pasare catre resursa temporara
 						LR->type = TypeOfLight::Point;					
@@ -350,7 +352,7 @@ void SceneManager::ReadXML()
 
 					else if (type == "spot")
 					{
-						std::shared_ptr<SpotLightProperties> LR = std::make_shared<SpotLightProperties>();
+						std::shared_ptr<LightProperties> LR = std::make_shared<LightProperties>();
 						std::unique_ptr<SceneObjectProperties> sop = std::make_unique<SceneObjectProperties>();
 
 						//Lumina ambianta
@@ -370,6 +372,8 @@ void SceneManager::ReadXML()
 						LR->direction.x = std::stof(ppNode->first_node("direction")->first_node("x")->value());
 						LR->direction.y = std::stof(ppNode->first_node("direction")->first_node("y")->value());
 						LR->direction.z = std::stof(ppNode->first_node("direction")->first_node("z")->value());
+						LR->intensity = std::stof(ppNode->first_node("intensity")->value());
+						LR->range = std::stof(ppNode->first_node("range")->value());
 
 						//Citire type din XML si pasare catre resursa temporara
 						LR->type = TypeOfLight::Spot;
@@ -388,7 +392,7 @@ void SceneManager::ReadXML()
 					}
 					else if (type == "directional")
 					{
-						std::shared_ptr<DirLightProperties> LR = std::make_shared<DirLightProperties>();
+						std::shared_ptr<LightProperties> LR = std::make_shared<LightProperties>();
 						std::unique_ptr<SceneObjectProperties> sop = std::make_unique<SceneObjectProperties>();
 
 						//Lumina ambianta
@@ -407,6 +411,7 @@ void SceneManager::ReadXML()
 						LR->direction.x = std::stof(ppNode->first_node("direction")->first_node("x")->value());
 						LR->direction.y = std::stof(ppNode->first_node("direction")->first_node("y")->value());
 						LR->direction.z = std::stof(ppNode->first_node("direction")->first_node("z")->value());
+						LR->intensity = std::stof(ppNode->first_node("intensity")->value());
 
 						//Citire type din XML si pasare catre resursa temporara
 						LR->type = TypeOfLight::Directional;
@@ -418,7 +423,6 @@ void SceneManager::ReadXML()
 						sop->translation.x = std::stof(ppNode->first_node("translation")->first_node("x")->value());
 						sop->translation.y = std::stof(ppNode->first_node("translation")->first_node("y")->value());
 						sop->translation.z = std::stof(ppNode->first_node("translation")->first_node("z")->value());						
-						
 						sop->scale = Vector3(1.0, 1.0, 1.0);
 						sceneObjectsMap[id] = std::make_shared<Light>(*sop.release(), *LR);
 						lights.push_back(LR);
@@ -452,6 +456,7 @@ void SceneManager::Init()
 {	
 	//Citire date din sceneManager.xml
 	ReadXML();
+	Renderer::pLights = &lights;
 }
 
 void SceneManager::Draw()

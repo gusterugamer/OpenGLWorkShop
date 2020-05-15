@@ -26,7 +26,7 @@ private:
 
 	Model model;
 
-	const float quadDimension = 10;
+	const float quadDimension = 5.0f;
 
 private:
 	void BuildQuad();	

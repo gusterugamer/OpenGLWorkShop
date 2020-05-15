@@ -7,9 +7,9 @@
 #include "VertexBuffer.h"
 
 struct Material {
-	Vector3 ambiental = { 1.0f,1.0,1.0 };
-	Vector3 diffuse = { 1.0f,1.0,1.0 };
-	Vector3 specular = { 1.0f,1.0,1.0 };
+	Vector3 ambiental = { 1.0f,1.0f,1.0f };
+	Vector3 diffuse = { 1.0f,1.0f,1.0f };
+	Vector3 specular = { 1.0f,1.0f,1.0f };
 	float shininess = 0.5f;
 };
 
