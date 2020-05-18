@@ -6,10 +6,10 @@
 struct TerrainProperties : SceneObjectProperties
 {
 	std::vector<int> textureId;
-	float offSetY;
-	int numarCelule;
-	int dimensiuneCelule;
-	Vector3 height;
+	float offSetY = -10.0f;
+	int numarCelule = 5;
+	int dimensiuneCelule = 5;
+	Vector3 height = Vector3(0.0f,0.0f,0.0f);
 };
 
 class Terrain : public SceneObject

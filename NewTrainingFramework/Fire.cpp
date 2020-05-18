@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "Fire.h"
-#include "DebugModeFunctions.h"
 #include "Renderer.h"
 
 Fire::Fire(FireProperties & sop)
@@ -18,7 +17,6 @@ Fire::Fire(FireProperties & sop)
 
 Fire::~Fire()
 {
-
 }
 
 void Fire::Draw()
@@ -27,17 +25,12 @@ void Fire::Draw()
 	SM = SM.SetScale(sop.scale);
 	TM = TM.SetTranslation(sop.translation);
 
-	modelMatrix = SM * RM * TM;
+	modelMatrix = SM * RM * TM;	
 
-	GLint unifTime = pShader->AddUniform("u_Time");
-	GLint unifDispMax = pShader->AddUniform("u_dispMax");
-	Renderer::DrawMultiTexture(modelMatrix,*pMdl, *pShader, textures);		
+	Renderer::DrawMultiTexture(modelMatrix,*pMdl, *pShader, textures);	
 
-	
-	GLCall(glUniform1f(unifTime, u_Time));
-	GLCall(glUniform1f(unifDispMax, sop.dispMax));
-
-	//GLCall(glDisable(GL_BLEND));
+	pShader->AddUniform1f("u_Time", u_Time);
+	pShader->AddUniform1f("u_dispMax", sop.dispMax);	
 }
 
 void Fire::Update(ESContext* esContext, const float & deltaTime)

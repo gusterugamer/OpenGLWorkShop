@@ -9,7 +9,7 @@
 /// \param shaderSrc Shader source string
 /// \return A new shader object on success, 0 on failure
 //
-GLuint ESUTIL_API esLoadShader ( GLenum type, char * filename )
+GLuint ESUTIL_API esLoadShader ( GLenum type,const char * filename )
 {
 	GLuint shader;
 	GLint compiled;

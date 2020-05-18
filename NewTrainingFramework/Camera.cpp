@@ -11,10 +11,7 @@ Camera::Camera(Vector3 position,Vector3 target,GLfloat fov, GLfloat nearZ, GLflo
 	position(position),
 	target(target)
 {	
-	R.SetIdentity();
-	//zAxis = (position - target).Normalize();
-	//xAxis = UP.Cross(zAxis).Normalize();
-	//yAxis = zAxis.Cross(xAxis).Normalize();
+	R.SetIdentity();	
 	perspectiveMatrix.SetPerspective(fov, ratio, nearZ, farZ);	
 	UpdateWorldView();	
 }
@@ -39,7 +36,7 @@ const Vector3& Camera::GetPosition() const
 	return position;	
 }
 
-void Camera::moveOx(float directie)
+void Camera::moveOx(char directie)
 {	
 	//xAxis = UP.Cross(zAxis).Normalize();	
 	Vector3 vectorDeplasare = xAxis * deltaTime * moveSpeed * directie;
@@ -48,7 +45,7 @@ void Camera::moveOx(float directie)
 	UpdateWorldView();
 }
 
-void Camera::moveOy(int directie)
+void Camera::moveOy(char directie)
 {	
 	//yAxis = zAxis.Cross(xAxis).Normalize();	
 	Vector3 vectorDeplasare = yAxis * moveSpeed*deltaTime  * (float)directie;
@@ -57,7 +54,7 @@ void Camera::moveOy(int directie)
 	UpdateWorldView();
 }
 
-void Camera::moveOz(int directie)
+void Camera::moveOz(char directie)
 {	
 	//zAxis = (position - target).Normalize();	
 	Vector3 vectorDeplasare = zAxis*moveSpeed * deltaTime * (float)directie;
@@ -66,7 +63,7 @@ void Camera::moveOz(int directie)
 	UpdateWorldView();
 }
 
-void Camera::rotateOx(float directie)
+void Camera::rotateOx(char directie)
 {	
 	Matrix rotate;
 	rotate.SetRotationX(directie * deltaTime * rotateSpeed);	
@@ -80,7 +77,7 @@ void Camera::rotateOx(float directie)
 	UpdateWorldView();
 }
 
-void Camera::rotateOy(float directie)
+void Camera::rotateOy(char directie)
 {
 	Matrix rotate;
 	rotate = rotate.SetRotationY(rotateSpeed * deltaTime * directie);	
@@ -93,7 +90,7 @@ void Camera::rotateOy(float directie)
 	UpdateWorldView();
 }	
 
-void Camera::rotateOz(int directie)
+void Camera::rotateOz(char directie)
 {
 	Matrix rotate;
 	rotate = rotate.SetRotationZ(rotateSpeed * deltaTime * directie);
@@ -110,7 +107,6 @@ void Camera::rotateOz(int directie)
 void Camera::Update(ESContext* esContext, const float& deltaTime)
 {	
 	this->deltaTime = deltaTime;	
-	this->esContext = esContext;
 	if (esContext->kbd.GetKey(0x57))
 	{
 		moveOz(-1);

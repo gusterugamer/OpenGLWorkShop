@@ -33,13 +33,9 @@ void Terrain::Draw()
 
 	//Trasmitere modelMatrix catre fragment shader	
 	
-	/*GLint uniformMoveTexX = pShader->AddUniform("u_moveTexX");
-	GLint uniformMoveTexY = pShader->AddUniform("u_moveTexY");
-	GLint uniformHeight = pShader->AddUniform("u_height");
 
-	GLCall(glUniform1f(uniformMoveTexX, moveTextureX));
-	GLCall(glUniform1f(uniformMoveTexY, moveTextureY));	
-	GLCall(glUniform3f(uniformHeight, sop.height.x, sop.height.y, sop.height.z));*/
+	//pShader->AddUniform1f("u_moveTexX", moveTextureX);
+	//pShader->AddUniform1f("u_moveTexY", moveTextureY);
 }
 
 void Terrain::Init(){

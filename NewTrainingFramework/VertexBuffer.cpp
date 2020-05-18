@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "VertexBuffer.h"
-#include "../Utilities/esUtil.h"
 #include "DebugModeFunctions.h"
 #include "Vertex.h"
 

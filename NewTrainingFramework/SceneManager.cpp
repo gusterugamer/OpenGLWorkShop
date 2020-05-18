@@ -10,6 +10,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <chrono>
 
 typedef rapidxml::xml_node<> xmlnode;
 typedef rapidxml::xml_attribute<> xmlattr;
@@ -19,7 +20,7 @@ SceneManager* SceneManager::instance = NULL;
 void SceneManager::ReadXML()
 {	
 	const char* xml = "../Resources/XML/sceneManager.xml";
-	std::ifstream xmlf(xml);
+	std::ifstream xmlf(xml, std::ifstream::binary);
 	try {
 		if (xmlf.bad() || xmlf.fail())
 		{
@@ -31,37 +32,27 @@ void SceneManager::ReadXML()
 
 			//Citire XML
 			rapidxml::xml_document<> xmldoc;
-			xmlnode* pRoot_node = nullptr;
+			xmlnode* pRoot_node = nullptr;		
+			//std::string doc = buffer.str();
 
-			//Parsare in buffer
-			std::stringstream buffer;
-			buffer << xmlf.rdbuf();
-
-			std::string content = std::move(buffer.str());
-			xmldoc.parse<0>(&content[0]);
-
+			//Parsare in buffer			
+			
+			std::stringstream buffer;		
+			
+			buffer << xmlf.rdbuf();		
+			std::string doc= buffer.str();			
+			
+			xmldoc.parse<0>(&doc[0]);
 			xmlf.close();			
 			
+			auto start = std::chrono::high_resolution_clock::now();
 			//Variabila temporara pentru ID citit din XML
 			int tempID = 0;
 			//Acesare primului nod din XML (sceneManager)
-			pRoot_node = xmldoc.first_node("sceneManager");
-			//Pointer catre subnodul backgroundColor
-			xmlnode* pRoot_SubNode = pRoot_node->first_node("backgroundColor");
-			//Verifica daca subnodul backgroundColor exista
-			if (!pRoot_SubNode)
-			{
-				std::cout << "Subnod 'backgroundColor' doesn't exist in Scene Manager XML file";
-			}
-			else
-			{
-				//Citire culor background din XML
-				bckgroundResource.RGB.x = std::stof(pRoot_SubNode->first_node("r")->value());
-				bckgroundResource.RGB.y = std::stof(pRoot_SubNode->first_node("g")->value());
-				bckgroundResource.RGB.z = std::stof(pRoot_SubNode->first_node("b")->value());
-			}
+			pRoot_node = xmldoc.first_node("sceneManager");		 
+			
 			//Pointer catre subnodul cameras
-			pRoot_SubNode = pRoot_node->first_node("cameras");
+			 xmlnode* pRoot_SubNode = pRoot_node->first_node("cameras");
 			//Verifica daca subnodul backgroundColor exista
 			if (!pRoot_SubNode)
 			{
@@ -431,6 +422,9 @@ void SceneManager::ReadXML()
 			}
 			//Citire active camera din XML
 			activateCameraId = std::stoi(pRoot_node->first_node("activeCamera")->value());
+			auto end = std::chrono::high_resolution_clock::now();
+			std::chrono::duration<float> duration = end - start;
+			float f = duration.count();
 		}
 	}
 	catch (const std::runtime_error& sceXml)
@@ -455,8 +449,8 @@ SceneManager* SceneManager::GetInstance()
 void SceneManager::Init()
 {	
 	//Citire date din sceneManager.xml
-	ReadXML();
-	Renderer::pLights = &lights;
+	ReadXML();	
+	Renderer::SM = this;		
 }
 
 void SceneManager::Draw()
@@ -465,7 +459,7 @@ void SceneManager::Draw()
 	for (auto n : sceneObjectsMap)
 	{
 		n.second->Draw();		
-	}	
+	}		
 }
 
 void SceneManager::Update(ESContext* esContext,const float& deltaTime)
@@ -473,18 +467,13 @@ void SceneManager::Update(ESContext* esContext,const float& deltaTime)
 	for (auto n : sceneObjectsMap)
 	{
 		n.second->Update(esContext,deltaTime);
-	}
-	cameraMap[activateCameraId].get()->Update(esContext,deltaTime);
+	}	
+	cameraMap[activateCameraId]->Update(esContext, deltaTime);	
 }
 
 std::shared_ptr<Camera> SceneManager::GetCurrentCamera()
 {
 	return cameraMap[activateCameraId];
-}
-
-const std::vector<std::shared_ptr<LightProperties>>& SceneManager::getLights()
-{
-	return lights;
 }
 
 SceneManager::~SceneManager()

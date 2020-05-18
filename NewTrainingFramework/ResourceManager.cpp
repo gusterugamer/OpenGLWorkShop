@@ -127,7 +127,7 @@ void ResourceManager::ReadXML()
 
 void ResourceManager::Init()
 {
-	ReadXML();		
+	ReadXML();	
 }
 
 ResourceManager* ResourceManager::GetInstance()

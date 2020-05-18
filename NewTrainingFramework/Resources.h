@@ -26,10 +26,6 @@ struct TextureResource
 };
 
 //Resurse pentru SceneManager (XML)
-struct BackgroundColorResource
-{
-	Vector3 RGB;
-};
 struct CamerasResource
 {
 	Vector3 position;
@@ -40,18 +36,6 @@ struct CamerasResource
 	GLfloat fov;
 	GLfloat nearZ;
 	GLfloat farZ;
-};
-struct AmbientalLightResource
-{
-	Vector3 color;
-	float ratio;
-};
-struct LightResource
-{
-	int associatedObject;
-	Vector3 difuseColor;
-	Vector3 specularColor;
-	std::string type;
 };
 struct DebugSettings
 {
@@ -73,17 +57,17 @@ enum class TypeOfLight {
 
 //structura generala ce contine proprietatile comune ale luminilor
 struct LightProperties {
-	Vector3 ambient;
-	Vector3 direction;
-	Vector3 position;
-	Vector3 diffuse;
-	Vector3 specular;
-	Vector3 color;
-	TypeOfLight type;
+	Vector3 ambient = Vector3(1.0f,1.0f,1.0f);
+	Vector3 direction = Vector3(0.0f, 0.0f, 1.0f);
+	Vector3 position = Vector3(0.0f, 0.0f, 0.0f);
+	Vector3 diffuse = Vector3(1.0f, 1.0f, 1.0f);
+	Vector3 specular = Vector3(1.0f, 1.0f, 1.0f);
+	Vector3 color = Vector3(1.0f, 1.0f, 1.0f);
+	TypeOfLight type = TypeOfLight::None;
 
 	float range = 5.0f;
 	float intensity = 1.0f;
 
-	float cutOff;
-	float outterCutOff;
+	float cutOff = 0.97629f;
+	float outterCutOff = 0.95371f;
 };

@@ -15,12 +15,12 @@ struct Material {
 
 struct SceneObjectProperties {
 	//proprietatile unui obiect
-	int modelId;
-	int shaderId;
+	int modelId = -1;
+	int shaderId = -1;
 	std::string type;
 	std::string blend;
 	std::string name;
-	int textureId;
+	int textureId = -1;
 	Vector3 translation;
 	Vector3 rotation;
 	Vector3 scale;
@@ -29,7 +29,7 @@ struct SceneObjectProperties {
 	std::string trajectoryIteration;
 	std::string trajectoryDirection;
 	Vector3 trajectoryEndPoint;
-	float trajectorySpeed;
+	float trajectorySpeed = 0.0f;
 	std::vector<int> lights;
 	Vector3 color = { 1.0f, 1.0f, 1.0f }; //culoare implicit daca modelul nu are textura incarcata(rosu)
 	float reflectivity = 0.0f; //using before adding material class

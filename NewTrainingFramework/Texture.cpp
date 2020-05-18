@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "Texture.h"
 #include "../Utilities/TGA.h"
-#include <iostream>
 #include "DebugModeFunctions.h"
 #include "ResourceManager.h"
+#include <iostream>
 
 const GLint Texture::GetTextureId() const
 {
@@ -38,70 +38,56 @@ Texture::Texture(std::shared_ptr<TextureResource> pTr)
 		}
 		else if (pTr->type == "cube")
 		{		
-			std::string fata1;	
-
-			for (int i = t_height / 3; i < 2*t_height/3; i++)
-			{
-				for (int j = 0; j < 3*t_width/4; j++)
-				{
-					fata1 += *(ap + 3 * (i * t_width + 2*t_width/4) + j);
-				}
-			}			
-			GLCall(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL_RGB, t_width/4, t_height/3, 0, GL_RGB, GL_UNSIGNED_BYTE, fata1.data()));			
-			fata1.clear();
-
+			//Citirea unei fete din skybox
+			std::string fataCurenta;
 			for (int i = t_height / 3; i < 2 * t_height / 3; i++)
 			{
-				for (int j = 0; j < 3 * t_width / 4; j++)
-				{
-					fata1 += *(ap + 3 * (i * t_width) + j);
-				}
+				std::string_view currentRowView(ap + 3 * (i * t_width + 2 * t_width / 4), 3 * (t_width / 4));
+				fataCurenta.append(currentRowView);
 			}
-			GLCall(glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, GL_RGB, t_width/4 , t_height /3, 0, GL_RGB, GL_UNSIGNED_BYTE, fata1.data()));
-			fata1.clear();	
+			GLCall(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL_RGB, t_width/4, t_height/3, 0, GL_RGB, GL_UNSIGNED_BYTE, fataCurenta.data()));
+			fataCurenta.clear();
+
+			for (int i = t_height / 3; i < 2 * t_height / 3; i++)
+			{	
+				std::string_view currentRowView(ap + 3 * (i * t_width), 3 * (t_width / 4));
+				fataCurenta.append(currentRowView);				
+			}
+			GLCall(glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, GL_RGB, t_width/4 , t_height /3, 0, GL_RGB, GL_UNSIGNED_BYTE, fataCurenta.data()));
+			fataCurenta.clear();
 
 			for (int i = 0; i < t_height / 3; i++)
 			{
-				for (int j = 0; j < 3 * t_width / 4; j++)
-				{
-					fata1 += *(ap + 3 * (i * t_width + t_width / 4) + j);
-				}
+				std::string_view currentRowView(ap + 3 * (i * t_width + t_width / 4), 3 * (t_width / 4));
+				fataCurenta.append(currentRowView);				
 			}
-			GLCall(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, GL_RGB, t_width/4 , t_height/3 , 0, GL_RGB, GL_UNSIGNED_BYTE, fata1.data()));			
-			fata1.clear();
+			GLCall(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, GL_RGB, t_width/4 , t_height/3 , 0, GL_RGB, GL_UNSIGNED_BYTE, fataCurenta.data()));			
+			fataCurenta.clear();
 
 			for (int i = 2 * t_height / 3; i < t_height; i++)
 			{
-				for (int j = 0; j < 3 * t_width / 4; j++)
-				{
-					fata1 += *(ap + 3 * (i * t_width + t_width / 4) + j);
-				}
+				std::string_view currentRowView(ap + 3 * (i * t_width + t_width / 4), 3 * (t_width / 4));
+				fataCurenta.append(currentRowView);		
 			}
-
-
-			GLCall(glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, GL_RGB, t_width/4 , t_height/3 , 0, GL_RGB, GL_UNSIGNED_BYTE, fata1.data()));			
-			fata1.clear();
+			GLCall(glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, GL_RGB, t_width/4 , t_height/3 , 0, GL_RGB, GL_UNSIGNED_BYTE, fataCurenta.data()));			
+			fataCurenta.clear();
 
 			for (int i = t_height / 3; i < 2 * t_height / 3; i++)
 			{
-				for (int j = 0; j < 3 * t_width / 4; j++)
-				{
-					fata1 += *(ap + 3 * (i * t_width + t_width / 4) + j);
-				}
+				std::string_view currentRowView(ap + 3 * (i * t_width + t_width / 4), 3 * (t_width / 4));
+				fataCurenta.append(currentRowView);				
 			}			
-			GLCall(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, GL_RGB, t_width/4 , t_height /3, 0, GL_RGB, GL_UNSIGNED_BYTE, fata1.data()));			
-			fata1.clear();
+			GLCall(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, GL_RGB, t_width/4 , t_height /3, 0, GL_RGB, GL_UNSIGNED_BYTE, fataCurenta.data()));			
+			fataCurenta.clear();
 
 			for (int i = t_height / 3; i < 2 * t_height / 3; i++)
 			{
-				for (int j = 0; j < 3 * t_width / 4; j++)
-				{
-					fata1 += *(ap + 3 * (i * t_width + 3 * t_width / 4) + j);
-				}
+				std::string_view currentRowView(ap + 3 * (i * t_width + 3 * t_width / 4), 3 * (t_width / 4));
+				fataCurenta.append(currentRowView);				
 			}
-			GLCall(glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, GL_RGB, t_width/4 , t_height/3 , 0, GL_RGB, GL_UNSIGNED_BYTE, fata1.data()));			
+			GLCall(glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, GL_RGB, t_width/4 , t_height/3 , 0, GL_RGB, GL_UNSIGNED_BYTE, fataCurenta.data()));			
 
-			GLCall(glBindTexture(ResourceManager::GetInstance()->glStringToInt[pTr->type], 0));
+			GLCall(glBindTexture(ResourceManager::GetInstance()->glStringToInt[pTr->type], 0));			
 		}
 
 	}

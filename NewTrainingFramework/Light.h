@@ -1,5 +1,4 @@
 #pragma once
-#include "../Utilities/Math.h"
 #include "SceneObject.h"
 #include "Resources.h"
 

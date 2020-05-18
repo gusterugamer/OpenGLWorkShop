@@ -1,16 +1,13 @@
 #include "stdafx.h"
 #include "Renderer.h"
-#include "SceneManager.h"
 #include "DebugModeFunctions.h"
-#include <sstream>
-#include <string>
 
-std::vector<std::shared_ptr<LightProperties>>* Renderer::pLights = nullptr;
+SceneManager* Renderer::SM = nullptr;
 
 void Renderer::Draw(const SceneObjectProperties& sop, const Model& model, Shader& shader, const Texture& tex)
 {
-	const Matrix& viewMatrix = SceneManager::GetInstance()->GetCurrentCamera()->GetViewMatrix();
-	const Matrix& perspectiveMatrix = SceneManager::GetInstance()->GetCurrentCamera()->GetPerspectiveMatrix();
+	const Matrix& viewMatrix = SM->cameraMap[SM->activateCameraId]->viewMatrix;
+	const Matrix& perspectiveMatrix = SM->cameraMap[SM->activateCameraId]->perspectiveMatrix;
 
 	GLCall(glUseProgram(shader.GetProgramId()));
 
@@ -19,177 +16,68 @@ void Renderer::Draw(const SceneObjectProperties& sop, const Model& model, Shader
 	model.GetIb().Bind();
 
 	//Texture
-	GLCall(glActiveTexture(GL_TEXTURE0));
-	GLCall(glUniform1i(shader.textureUniform, 0));
-	tex.Bind();
+	shader.AddTexture("u_texture", tex);	
 
 	//ModelAttributes
-	GLCall(glEnableVertexAttribArray(shader.positionAttribute));
-	GLCall(glVertexAttribPointer(shader.positionAttribute, sizeof(Vector3) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, pos)));
-
-	GLint normalLoc = shader.AddAttrib("a_normal");
-	GLCall(glEnableVertexAttribArray(normalLoc));
-	GLCall(glVertexAttribPointer(normalLoc, sizeof(Vector3) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, norm)));
-
-	/*GLint tanLoc = shader.AddAttrib("a_tan");
-	GLCall(glEnableVertexAttribArray(tanLoc));
-	GLCall(glVertexAttribPointer(normalLoc, sizeof(Vector3) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, tgt)));
-
-	GLint binormLoc = shader.AddAttrib("a_binorm");
-	GLCall(glEnableVertexAttribArray(binormLoc));
-	GLCall(glVertexAttribPointer(normalLoc, sizeof(Vector3) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, binorm)));*/
-
-	GLCall(glEnableVertexAttribArray(shader.textureCoordAttrib));
-	GLCall(glVertexAttribPointer(shader.textureCoordAttrib, sizeof(Vector2) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, uv)));
-
-	GLint cameraPosLoc = shader.AddUniform("u_cameraPos");
-	GLCall(glUniform3f(cameraPosLoc, SceneManager::GetInstance()->GetCurrentCamera()->GetPosition().x,
-									 SceneManager::GetInstance()->GetCurrentCamera()->GetPosition().y,
-									 SceneManager::GetInstance()->GetCurrentCamera()->GetPosition().z));
-
-	//LightColor
-	GLint ambientalLoc = shader.AddUniform("material.ambient");
-	GLint diffuseLoc = shader.AddUniform("material.diffuse");
-	GLint specularLoc = shader.AddUniform("material.specular");
-	GLint shininessLoc = shader.AddUniform("material.shininess");
-
-
-	GLCall(glUniform3f(ambientalLoc, sop.mat.ambiental.x, sop.mat.ambiental.y, sop.mat.ambiental.z));
-	GLCall(glUniform3f(diffuseLoc, sop.mat.diffuse.x, sop.mat.diffuse.y, sop.mat.diffuse.z));
-	GLCall(glUniform3f(specularLoc, sop.mat.specular.x, sop.mat.specular.y, sop.mat.specular.z));
-	GLCall(glUniform1f(shininessLoc, sop.mat.shininess));
-	GLCall(glUniform1i(shader.AddUniform("u_numLights"), 4));
+	shader.AddAttrib("a_pos", sizeof(Vector3) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, pos));
+	
+	shader.AddAttrib("a_normal", sizeof(Vector3) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, norm));
+	
+	shader.AddAttrib("a_uv", sizeof(Vector2) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, uv));
+	
+	
+	shader.AddUniform3f("u_cameraPos", SM->cameraMap[SM->activateCameraId]->position);
+	shader.AddUniform3f("material.ambient", sop.mat.ambiental);
+	shader.AddUniform3f("material.specular", sop.mat.specular);
+	shader.AddUniform3f("material.diffuse", sop.mat.diffuse);
+	shader.AddUniform1f("material.shininess", sop.mat.shininess);
 
 	//Light
-	for (int i = 0; i < pLights->size(); i++)
-	{
-		std::shared_ptr<LightProperties> lp = (*pLights)[i];
+	for (unsigned int i = 0; i < SM->lights.size(); i++)
+	{		
+		std::shared_ptr<LightProperties> lp = SM->lights[i];
 		switch (lp->type)
 		{
 		case TypeOfLight::Point:
-		{
-			std::string ss;
-			ss += "lights[" + std::to_string(i) + "].ambient";
-			GLCall(glUniform3f(shader.AddUniform(ss.c_str()), lp->ambient.x, lp->ambient.y, lp->ambient.z));
-			ss.clear();
-			
-			ss += "lights[" + std::to_string(i) + "].diffuse";
-			GLCall(glUniform3f(shader.AddUniform(ss.c_str()), lp->diffuse.x, lp->diffuse.y, lp->diffuse.z));
-			ss.clear();
-			
-			ss += "lights[" + std::to_string(i) + "].specular";
-			GLCall(glUniform3f(shader.AddUniform(ss.c_str()), lp->specular.x, lp->specular.y, lp->specular.z));
-			ss.clear();
-			
-			ss += "lights[" + std::to_string(i) + "].position";
-			GLCall(glUniform3f(shader.AddUniform(ss.c_str()), lp->position.x, lp->position.y, lp->position.z));
-			ss.clear();
-
-			ss += "lights[" + std::to_string(i) + "].type";
-			GLCall(glUniform1i(shader.AddUniform(ss.c_str()), (int)lp->type));
-			ss.clear();
-
-			ss += "lights[" + std::to_string(i) + "].range";
-			GLCall(glUniform1f(shader.AddUniform(ss.c_str()), lp->range));
-			ss.clear();	
-			
-			ss += "lights[" + std::to_string(i) + "].intensity";
-			GLCall(glUniform1f(shader.AddUniform(ss.c_str()), lp->intensity));
-			ss.clear();		
-
-			ss += "lights[" + std::to_string(i) + "].direction";
-			GLCall(glUniform3f(shader.AddUniform(ss.c_str()), lp->direction.x , lp->direction.y, lp->direction.z));
-			ss.clear();
+		{			
+			shader.AddUniformInArray3f("lights", i, "ambient", lp->ambient);			
+			shader.AddUniformInArray3f("lights", i, "diffuse", lp->diffuse);			
+			shader.AddUniformInArray3f("lights", i, "specular", lp->specular);
+			shader.AddUniformInArray3f("lights", i, "position", lp->position);			
+			shader.AddUniformInArray1i("lights", i, "type", (int)lp->type);
+			shader.AddUniformInArray1f("lights", i, "range", lp->range);
+			shader.AddUniformInArray1f("lights", i, "intensity", lp->intensity);				
 		}
 		break;
 		case TypeOfLight::Directional:
 		{
-			std::string ss;
-			ss += "lights[" + std::to_string(i) + "].ambient";
-			GLCall(glUniform3f(shader.AddUniform(ss.c_str()), lp->ambient.x, lp->ambient.y, lp->ambient.z));
-			ss.clear();
-
-			ss += "lights[" + std::to_string(i) + "].diffuse";
-			GLCall(glUniform3f(shader.AddUniform(ss.c_str()), lp->diffuse.x, lp->diffuse.y, lp->diffuse.z));
-			ss.clear();
-
-			ss += "lights[" + std::to_string(i) + "].specular";
-			GLCall(glUniform3f(shader.AddUniform(ss.c_str()), lp->specular.x, lp->specular.y, lp->specular.z));
-			ss.clear();
-
-			ss += "lights[" + std::to_string(i) + "].position";
-			GLCall(glUniform3f(shader.AddUniform(ss.c_str()), lp->position.x, lp->position.y, lp->position.z));
-			ss.clear();
-
-			ss += "lights[" + std::to_string(i) + "].type";
-			GLCall(glUniform1i(shader.AddUniform(ss.c_str()), (int)lp->type));
-			ss.clear();
-
-			ss += "lights[" + std::to_string(i) + "].range";
-			GLCall(glUniform1f(shader.AddUniform(ss.c_str()), lp->range));
-			ss.clear();
-
-			ss += "lights[" + std::to_string(i) + "].intensity";
-			GLCall(glUniform1f(shader.AddUniform(ss.c_str()), lp->intensity));
-			ss.clear();
-
-			ss += "lights[" + std::to_string(i) + "].direction";
-			GLCall(glUniform3f(shader.AddUniform(ss.c_str()), lp->direction.x, lp->direction.y, lp->direction.z));
-			ss.clear();
+			shader.AddUniformInArray3f("lights", i, "ambient", lp->ambient);
+			shader.AddUniformInArray3f("lights", i, "diffuse", lp->diffuse);
+			shader.AddUniformInArray3f("lights", i, "specular", lp->specular);
+			shader.AddUniformInArray3f("lights", i, "position", lp->position);
+			shader.AddUniformInArray1i("lights", i, "type", (int)lp->type);			
+			shader.AddUniformInArray1f("lights", i, "intensity", lp->intensity);
+			shader.AddUniformInArray3f("lights", i, "direction", lp->direction);
 		}
 		break;
 		case TypeOfLight::Spot:
 		{
-			std::string ss;
-			ss += "lights[" + std::to_string(i) + "].ambient";
-			GLCall(glUniform3f(shader.AddUniform(ss.c_str()), lp->ambient.x, lp->ambient.y, lp->ambient.z));
-			ss.clear();
-
-			ss += "lights[" + std::to_string(i) + "].diffuse";
-			GLCall(glUniform3f(shader.AddUniform(ss.c_str()), lp->diffuse.x, lp->diffuse.y, lp->diffuse.z));
-			ss.clear();
-
-			ss += "lights[" + std::to_string(i) + "].specular";
-			GLCall(glUniform3f(shader.AddUniform(ss.c_str()), lp->specular.x, lp->specular.y, lp->specular.z));
-			ss.clear();
-
-			ss += "lights[" + std::to_string(i) + "].position";
-			GLCall(glUniform3f(shader.AddUniform(ss.c_str()), lp->position.x, lp->position.y, lp->position.z));
-			ss.clear();
-
-			ss += "lights[" + std::to_string(i) + "].type";
-			GLCall(glUniform1i(shader.AddUniform(ss.c_str()), (int)lp->type));
-			ss.clear();
-
-			ss += "lights[" + std::to_string(i) + "].range";
-			GLCall(glUniform1f(shader.AddUniform(ss.c_str()), lp->range));
-			ss.clear();
-
-			ss += "lights[" + std::to_string(i) + "].intensity";
-			GLCall(glUniform1f(shader.AddUniform(ss.c_str()), lp->intensity));
-			ss.clear();
-
-			ss += "lights[" + std::to_string(i) + "].direction";
-			GLCall(glUniform3f(shader.AddUniform(ss.c_str()), lp->direction.x, lp->direction.y, lp->direction.z));
-			ss.clear();
-
-			ss += "lights[" + std::to_string(i) + "].cutOff";
-			GLCall(glUniform1f(shader.AddUniform(ss.c_str()), lp->cutOff));
-			ss.clear();
-
-			ss += "lights[" + std::to_string(i) + "].outterCutOff";
-			GLCall(glUniform1f(shader.AddUniform(ss.c_str()), lp->outterCutOff));
-			ss.clear();
+			shader.AddUniformInArray3f("lights", i, "ambient", lp->ambient);
+			shader.AddUniformInArray3f("lights", i, "diffuse", lp->diffuse);
+			shader.AddUniformInArray3f("lights", i, "specular", lp->specular);
+			shader.AddUniformInArray3f("lights", i, "position", lp->position);
+			shader.AddUniformInArray1i("lights", i, "type", (int)lp->type);
+			shader.AddUniformInArray1f("lights", i, "range", lp->range);
+			shader.AddUniformInArray1f("lights", i, "intensity", lp->intensity);
+			shader.AddUniformInArray3f("lights", i, "direction", lp->direction);
+			shader.AddUniformInArray1f("lights", i, "cutOff", lp->cutOff);
+			shader.AddUniformInArray1f("lights", i, "outterCutOff", lp->outterCutOff);
 		}
 		break;
 		}
 	}
-	//Object properties related to light reflection	
-
-	//GLcall(glUniform3f(lightStructLoc))
 
 	//Matrices
-
 	//Transform (or Model) matrix calculation
 	Matrix RMx;
 	Matrix RMy;
@@ -202,28 +90,21 @@ void Renderer::Draw(const SceneObjectProperties& sop, const Model& model, Shader
 	RM = RMx.SetRotationX(sop.rotation.x) * RMy.SetRotationY(sop.rotation.y) *
 		RMz.SetRotationZ(sop.rotation.z);
 	SM = SM.SetScale((Vector3)sop.scale);
-	TM = TM.SetTranslation((Vector3)sop.translation);
-	modelMatrix = SM * TM * RM;
+	TM = TM.SetTranslation((Vector3)sop.translation);	modelMatrix = SM * TM * RM;
 
-
-	GLCall(glUniformMatrix4fv(shader.modelMatrixUniform, 1, GL_FALSE, (GLfloat*)modelMatrix.m));
-	GLCall(glUniformMatrix4fv(shader.viewMatrixUniform, 1, GL_FALSE, (GLfloat*)viewMatrix.m));
-	GLCall(glUniformMatrix4fv(shader.perspectiveMatrixUniform, 1, GL_FALSE, (GLfloat*)perspectiveMatrix.m));
+	
+	shader.AddMatrix4fv("u_view", 1, GL_FALSE, viewMatrix);
+	shader.AddMatrix4fv("u_model", 1, GL_FALSE, modelMatrix);
+	shader.AddMatrix4fv("u_perspective", 1, GL_FALSE, perspectiveMatrix);
+	
 	//DrawCall
 	GLCall(glDrawElements(GL_TRIANGLES, model.GetIb().GetCount(), GL_UNSIGNED_SHORT, nullptr));
-
-	GLCall(glDisableVertexAttribArray(normalLoc));
-	/*GLCall(glDisableVertexAttribArray(tanLoc));
-	GLCall(glDisableVertexAttribArray(binormLoc));*/
-	GLCall(glDisableVertexAttribArray(shader.textureCoordAttrib));
-	GLCall(glDisableVertexAttribArray(shader.positionAttribute));
-
 }
 
 void Renderer::DrawBlendedTextures(const Matrix& modelMatrix, Model& model, Shader& shader, const std::vector<std::shared_ptr<Texture>>& tex)
 {
-	const Matrix& viewMatrix = SceneManager::GetInstance()->GetCurrentCamera()->GetViewMatrix();
-	const Matrix& perspectiveMatrix = SceneManager::GetInstance()->GetCurrentCamera()->GetPerspectiveMatrix();
+	const Matrix& viewMatrix = SM->cameraMap[SM->activateCameraId]->viewMatrix;
+	const Matrix& perspectiveMatrix = SM->cameraMap[SM->activateCameraId]->perspectiveMatrix;
 
 	GLCall(glUseProgram(shader.GetProgramId()));
 
@@ -231,38 +112,25 @@ void Renderer::DrawBlendedTextures(const Matrix& modelMatrix, Model& model, Shad
 	model.GetIb().Bind();
 
 	for (unsigned int i = 0; i < tex.size(); i++)
-	{
-		std::string s = "u_texture[" + std::to_string(i) + "]";
-		GLCall(glActiveTexture(GL_TEXTURE0 + i));
-		GLCall(glUniform1i(shader.AddUniform(s.c_str()), i));
-		tex[i]->Bind();
+	{		
+		shader.AddMultiTexture("u_texture", i, tex[i]);
 	}
 
-	GLCall(glEnableVertexAttribArray(shader.positionAttribute));
-	GLCall(glVertexAttribPointer(shader.positionAttribute, sizeof(Vector3) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, pos)));
+	shader.AddAttrib("a_pos", sizeof(Vector3) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, pos));
+	shader.AddAttrib("a_uv", sizeof(Vector2) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, uv));
+	shader.AddAttrib("a_uvblend", sizeof(Vector2) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, uvblend));	
 
-	GLCall(glEnableVertexAttribArray(shader.textureCoordAttrib));
-	GLCall(glVertexAttribPointer(shader.textureCoordAttrib, sizeof(Vector2) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, uv)));
-
-	GLint attribBlendUv = shader.AddAttrib("a_uvblend");
-	GLCall(glEnableVertexAttribArray(attribBlendUv));
-	GLCall(glVertexAttribPointer(attribBlendUv, sizeof(Vector2) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, uvblend)));
-
-	GLCall(glUniformMatrix4fv(shader.viewMatrixUniform, 1, GL_FALSE, (GLfloat*)viewMatrix.m));
-	GLCall(glUniformMatrix4fv(shader.perspectiveMatrixUniform, 1, GL_FALSE, (GLfloat*)perspectiveMatrix.m));
-	GLCall(glUniformMatrix4fv(shader.modelMatrixUniform, 1, GL_FALSE, (GLfloat*)modelMatrix.m));
+	shader.AddMatrix4fv("u_view", 1, GL_FALSE, viewMatrix);
+	shader.AddMatrix4fv("u_model", 1, GL_FALSE, modelMatrix);
+	shader.AddMatrix4fv("u_perspective", 1, GL_FALSE, perspectiveMatrix);
 
 	GLCall(glDrawElements(GL_TRIANGLES, model.GetIb().GetCount(), GL_UNSIGNED_SHORT, nullptr));
-
-	GLCall(glDisableVertexAttribArray(shader.textureCoordAttrib));
-	GLCall(glDisableVertexAttribArray(shader.positionAttribute));
-	GLCall(glDisableVertexAttribArray(attribBlendUv));
 }
 
 void Renderer::DrawBlendedTextures(const Matrix& modelMatrix, const VertexBuffer& vb, const IndexBuffer& ib, Shader& shader, const std::vector<std::shared_ptr<Texture>>& tex)
 {
-	const Matrix& viewMatrix = SceneManager::GetInstance()->GetCurrentCamera()->GetViewMatrix();
-	const Matrix& perspectiveMatrix = SceneManager::GetInstance()->GetCurrentCamera()->GetPerspectiveMatrix();
+	const Matrix& viewMatrix = SM->cameraMap[SM->activateCameraId]->viewMatrix;
+	const Matrix& perspectiveMatrix = SM->cameraMap[SM->activateCameraId]->perspectiveMatrix;
 
 	GLCall(glUseProgram(shader.GetProgramId()));
 
@@ -270,37 +138,25 @@ void Renderer::DrawBlendedTextures(const Matrix& modelMatrix, const VertexBuffer
 	ib.Bind();
 
 	for (unsigned int i = 0; i < tex.size(); i++)
-	{
-		std::string s = "u_texture[" + std::to_string(i) + "]";
-		GLCall(glActiveTexture(GL_TEXTURE0 + i));
-		GLCall(glUniform1i(shader.AddUniform(s.c_str()), i));
-		tex[i]->Bind();
+	{		
+		shader.AddMultiTexture("u_texture", i, tex[i]);
 	}
 
-	GLCall(glEnableVertexAttribArray(shader.positionAttribute));
-	GLCall(glVertexAttribPointer(shader.positionAttribute, sizeof(Vector3) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, pos)));
+	shader.AddAttrib("a_pos", sizeof(Vector3) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, pos));
+	shader.AddAttrib("a_uv", sizeof(Vector2) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, uv));
+	shader.AddAttrib("a_uvblend", sizeof(Vector2) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, uvblend));
 
-	GLCall(glEnableVertexAttribArray(shader.textureCoordAttrib));
-	GLCall(glVertexAttribPointer(shader.textureCoordAttrib, sizeof(Vector2) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, uv)));
+	shader.AddMatrix4fv("u_view", 1, GL_FALSE, viewMatrix);
+	shader.AddMatrix4fv("u_model", 1, GL_FALSE, modelMatrix);
+	shader.AddMatrix4fv("u_perspective", 1, GL_FALSE, perspectiveMatrix);
 
-	GLint attribBlendUv = shader.AddAttrib("a_uvblend");
-	GLCall(glEnableVertexAttribArray(attribBlendUv));
-	GLCall(glVertexAttribPointer(attribBlendUv, sizeof(Vector2) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, uvblend)));
-
-	GLCall(glUniformMatrix4fv(shader.viewMatrixUniform, 1, GL_FALSE, (GLfloat*)viewMatrix.m));
-	GLCall(glUniformMatrix4fv(shader.perspectiveMatrixUniform, 1, GL_FALSE, (GLfloat*)perspectiveMatrix.m));
-	GLCall(glUniformMatrix4fv(shader.modelMatrixUniform, 1, GL_FALSE, (GLfloat*)modelMatrix.m));
-
-	GLCall(glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_SHORT, nullptr));
-
-	GLCall(glDisableVertexAttribArray(shader.textureCoordAttrib));
-	GLCall(glDisableVertexAttribArray(shader.positionAttribute));
+	GLCall(glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_SHORT, nullptr));	
 }
 
 void Renderer::DrawMultiTexture(const Matrix& modelMatrix, Model& model, Shader& shader, const std::vector<std::shared_ptr<Texture>>& tex)
 {
-	const Matrix& viewMatrix = SceneManager::GetInstance()->GetCurrentCamera()->GetViewMatrix();
-	const Matrix& perspectiveMatrix = SceneManager::GetInstance()->GetCurrentCamera()->GetPerspectiveMatrix();
+	const Matrix& viewMatrix = SM->cameraMap[SM->activateCameraId]->viewMatrix;
+	const Matrix& perspectiveMatrix = SM->cameraMap[SM->activateCameraId]->perspectiveMatrix;
 
 	GLCall(glUseProgram(shader.GetProgramId()));
 
@@ -308,59 +164,45 @@ void Renderer::DrawMultiTexture(const Matrix& modelMatrix, Model& model, Shader&
 	model.GetIb().Bind();
 
 	for (unsigned int i = 0; i < tex.size(); i++)
-	{
-		std::string s = "u_texture[" + std::to_string(i) + "]";
-		GLCall(glActiveTexture(GL_TEXTURE0 + i));
-		GLCall(glUniform1i(shader.AddUniform(s.c_str()), i));
-		tex[i]->Bind();
+	{		
+		shader.AddMultiTexture("u_texture", i, tex[i]);
 	}
 
-	GLCall(glEnableVertexAttribArray(shader.positionAttribute));
-	GLCall(glVertexAttribPointer(shader.positionAttribute, sizeof(Vector3) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, pos)));
+	shader.AddAttrib("a_pos", sizeof(Vector3) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, pos));
+	shader.AddAttrib("a_uv", sizeof(Vector2) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, uv));
 
-	GLCall(glEnableVertexAttribArray(shader.textureCoordAttrib));
-	GLCall(glVertexAttribPointer(shader.textureCoordAttrib, sizeof(Vector2) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, uv)));
-
-	GLCall(glUniformMatrix4fv(shader.viewMatrixUniform, 1, GL_FALSE, (GLfloat*)viewMatrix.m));
-	GLCall(glUniformMatrix4fv(shader.perspectiveMatrixUniform, 1, GL_FALSE, (GLfloat*)perspectiveMatrix.m));
-	GLCall(glUniformMatrix4fv(shader.modelMatrixUniform, 1, GL_FALSE, (GLfloat*)modelMatrix.m));
+	shader.AddMatrix4fv("u_view", 1, GL_FALSE, viewMatrix);
+	shader.AddMatrix4fv("u_model", 1, GL_FALSE, modelMatrix);
+	shader.AddMatrix4fv("u_perspective", 1, GL_FALSE, perspectiveMatrix);
 
 	GLCall(glDrawElements(GL_TRIANGLES, model.GetIb().GetCount(), GL_UNSIGNED_SHORT, nullptr));
-
-	GLCall(glDisableVertexAttribArray(shader.textureCoordAttrib));
-	GLCall(glDisableVertexAttribArray(shader.positionAttribute));
 }
 
 void Renderer::DrawSkyBox(const Matrix& modelMatrix, Model& model, Shader& shader, const Texture& tex)
 {
-	const Matrix& viewMatrix = SceneManager::GetInstance()->GetCurrentCamera()->GetViewMatrix();
-	const Matrix& perspectiveMatrix = SceneManager::GetInstance()->GetCurrentCamera()->GetPerspectiveMatrix();
+	const Matrix& viewMatrix = SM->cameraMap[SM->activateCameraId]->viewMatrix;
+	const Matrix& perspectiveMatrix = SM->cameraMap[SM->activateCameraId]->perspectiveMatrix;
 
 	GLCall(glUseProgram(shader.GetProgramId()));
 
 	model.GetVd().Bind();
 	model.GetIb().Bind();
 
-	GLCall(glActiveTexture(GL_TEXTURE0));
-	GLCall(glUniform1i(shader.AddUniform("u_texture_cube"), 0));
-	tex.Bind();
+	shader.AddTexture("u_texture_cube", tex);	
 
-	GLCall(glEnableVertexAttribArray(shader.positionAttribute));
-	GLCall(glVertexAttribPointer(shader.positionAttribute, sizeof(Vector3) / sizeof(GLfloat), GL_FLOAT, GL_TRUE, sizeof(Vertex), (const void*)offsetof(Vertex, pos)));
+	shader.AddAttrib("a_pos", sizeof(Vector3) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, pos));	
 
-	GLCall(glUniformMatrix4fv(shader.viewMatrixUniform, 1, GL_FALSE, (GLfloat*)viewMatrix.m));
-	GLCall(glUniformMatrix4fv(shader.perspectiveMatrixUniform, 1, GL_FALSE, (GLfloat*)perspectiveMatrix.m));
-	GLCall(glUniformMatrix4fv(shader.modelMatrixUniform, 1, GL_FALSE, (GLfloat*)modelMatrix.m));
+	shader.AddMatrix4fv("u_view", 1, GL_FALSE, viewMatrix);
+	shader.AddMatrix4fv("u_model", 1, GL_FALSE, modelMatrix);
+	shader.AddMatrix4fv("u_perspective", 1, GL_FALSE, perspectiveMatrix);
 
-	GLCall(glDrawElements(GL_TRIANGLES, model.GetIb().GetCount(), GL_UNSIGNED_SHORT, nullptr));
-
-	GLCall(glDisableVertexAttribArray(shader.positionAttribute));
+	GLCall(glDrawElements(GL_TRIANGLES, model.GetIb().GetCount(), GL_UNSIGNED_SHORT, nullptr));	
 }
 
 void Renderer::DrawDebug(const SceneObjectProperties& sop, const VertexBuffer& vb, const IndexBuffer& ib, Shader& shader, const Texture& tex)
 {
-	const Matrix& viewMatrix = SceneManager::GetInstance()->GetCurrentCamera()->GetViewMatrix();
-	const Matrix& perspectiveMatrix = SceneManager::GetInstance()->GetCurrentCamera()->GetPerspectiveMatrix();
+	const Matrix& viewMatrix = SM->cameraMap[SM->activateCameraId]->viewMatrix;
+	const Matrix& perspectiveMatrix = SM->cameraMap[SM->activateCameraId]->perspectiveMatrix;
 
 	GLCall(glUseProgram(shader.GetProgramId()));
 
@@ -369,20 +211,12 @@ void Renderer::DrawDebug(const SceneObjectProperties& sop, const VertexBuffer& v
 	ib.Bind();
 
 	//Texture
-	GLCall(glActiveTexture(GL_TEXTURE0));
-	GLCall(glUniform1i(shader.textureUniform, 0));
-	tex.Bind();
+	shader.AddTexture("u_texture", tex);	
 
 	//ModelAttributes
-	GLCall(glEnableVertexAttribArray(shader.positionAttribute));
-	GLCall(glVertexAttribPointer(shader.positionAttribute, sizeof(Vector3) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, pos)));
-
-	GLCall(glEnableVertexAttribArray(shader.textureCoordAttrib));
-	GLCall(glVertexAttribPointer(shader.textureCoordAttrib, sizeof(Vector2) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, uv)));
-
-	GLint colorLoc = shader.AddAttrib("a_color");
-	GLCall(glEnableVertexAttribArray(colorLoc));
-	GLCall(glVertexAttribPointer(colorLoc, sizeof(Vector2) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, color)));
+	shader.AddAttrib("a_pos", sizeof(Vector3) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, pos));
+	shader.AddAttrib("a_uv", sizeof(Vector2) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, uv));
+	shader.AddAttrib("a_color", sizeof(Vector2) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, color));
 
 	Matrix SM;
 	Matrix TM;
@@ -404,14 +238,10 @@ void Renderer::DrawDebug(const SceneObjectProperties& sop, const VertexBuffer& v
 	modelMatrix.m[2][2] = viewMatrix.m[2][2];
 
 	Matrix LightMatrix = modelMatrix * (Matrix)(viewMatrix);
-
-	GLCall(glUniformMatrix4fv(shader.AddUniform("u_LightMatrix"), 1, GL_FALSE, (GLfloat*)LightMatrix.m));
-	GLCall(glUniformMatrix4fv(shader.AddUniform("u_PerspectiveMatrix"), 1, GL_FALSE, (GLfloat*)perspectiveMatrix.m));
+	
+	shader.AddMatrix4fv("u_LightMatrix", 1, GL_FALSE, LightMatrix);
+	shader.AddMatrix4fv("u_PerspectiveMatrix", 1, GL_FALSE, perspectiveMatrix);
+	
 	//DrawCall
 	GLCall(glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_SHORT, nullptr));
-
-	GLCall(glDisableVertexAttribArray(shader.textureCoordAttrib));
-	GLCall(glDisableVertexAttribArray(shader.positionAttribute));
-	GLCall(glDisableVertexAttribArray(colorLoc));
-
 }

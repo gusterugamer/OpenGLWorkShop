@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include "Camera.h"
 #include "Model.h"
-#include "Light.h"
+#include "SceneManager.h"
 #include "SceneObject.h"
 
 class Renderer {
@@ -15,6 +15,6 @@ public:
 	static void DrawSkyBox(const Matrix& modelMatrix, Model& model, Shader& shader, const Texture& tex);	
 	static void DrawDebug(const SceneObjectProperties& sop, const VertexBuffer& vb, const IndexBuffer& ib, Shader& shader, const Texture& tex);
 private:	
-	bool fog = false;
-	static std::vector<std::shared_ptr<LightProperties>>* pLights;
+	bool fog = false;	
+	static SceneManager* SM;
 };

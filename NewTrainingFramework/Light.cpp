@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "Light.h"
-#include "DebugModeFunctions.h"
 #include "Renderer.h"
 
 Light::Light(SceneObjectProperties& sop, LightProperties& lp)

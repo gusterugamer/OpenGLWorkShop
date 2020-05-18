@@ -6,7 +6,6 @@ attribute vec3 a_tan;
 
 varying vec2 v_uv;
 varying vec3 v_normal;
-varying vec3 v_toLightVec;
 varying vec3 v_FragPos;
 
 uniform mat4 u_view;
@@ -22,7 +21,6 @@ void main()
 
 	v_uv = a_uv;
 	v_normal = a_normal;
-	v_toLightVec = u_lightPosition - vec3(worldPosition);
 	
 //	 vec3 normalizedNorm=   normalize(a_normal);
 //	 vec3 normalizedBinorm=	normalize(a_binorm);

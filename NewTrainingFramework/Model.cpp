@@ -3,7 +3,6 @@
 #include <fstream>
 #include <iostream>
 #include <limits.h>
-#include "DebugModeFunctions.h"
 #include <exception>
 
 
@@ -18,6 +17,12 @@ Model::Model(const std::string& path)
 	ReadModelFile(path);
 	vb = { verticies.data(), nrvertces };
 	ib = { indicies.data(), nrindicies };	
+}
+
+Model::Model(const VertexBuffer& vb, const IndexBuffer& ib)
+{
+	this->vb = vb;
+	this->ib = ib;
 }
 
 void Model::ReadModelFile(const std::string& file)
@@ -37,7 +42,7 @@ void Model::ReadModelFile(const std::string& file)
 			model >> nrvertces;			
 			verticies.reserve(nrvertces);
 			// Citire parametrii (pos, binorm, etc.. pentru toate randurile din fisier)
-			for (int i = 0; i < nrvertces; i++)
+			for (unsigned int i = 0; i < nrvertces; i++)
 			{
 				//Variabile temporare
 				Vertex tempVer;
@@ -90,7 +95,7 @@ void Model::ReadModelFile(const std::string& file)
 			model >> nrindicies;			
 			indicies.reserve(nrindicies);
 			//Citire indici din fisierul modelului de pe toate randurile.
-			for (int i = 0; i < nrindicies/3; i++)
+			for (unsigned int i = 0; i < nrindicies/3; i++)
 			{
 				GLushort x = 0;		
 
@@ -120,13 +125,3 @@ void Model::ReadModelFile(const std::string& file)
 const IndexBuffer& Model::GetIb() const { return ib; }
  
 const VertexBuffer& Model::GetVd() const {	return vb; }
-
-const std::vector<GLushort>& Model::getIndcies() const
-{
-	return indicies;
-}
-
-const std::vector<Vertex>& Model::getVerts() const
-{
-	return verticies;
-}

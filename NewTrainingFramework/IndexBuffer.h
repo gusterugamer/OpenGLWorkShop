@@ -9,9 +9,9 @@ public:
 	IndexBuffer(const void* data, unsigned int count);
 	~IndexBuffer();
 
-	void Bind() const;
-	void Unbind() const;
-	void DeleteBuffer() const;
+	void Bind() const noexcept;
+	void Unbind() const noexcept;
+	void DeleteBuffer() const noexcept;
 
-	unsigned int GetCount() const;
+	unsigned int GetCount() const noexcept;
 };

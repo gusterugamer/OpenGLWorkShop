@@ -41,10 +41,8 @@ public:
 
 class Vector3
 {
-//Making Vector4 a friend class makes sens rather than having a function to convert Vec4 into Vec3;
-	
-public:
-	//friend class Vector4;
+//Making Vector4 a friend class makes sens rather than having a function to convert Vec4 into Vec3;	
+public:	
 	//Constructors
 	Vector3() : x(0.0f), y(0.0f), z(0.0f) {}
 	Vector3(GLfloat _x, GLfloat _y, GLfloat _z) : x(_x), y(_y), z(_z) {}
@@ -133,7 +131,7 @@ public:
 class Matrix
 {
 public:
-	static constexpr const float DEG_TO_RAD = 0.01745329251994329576923690768489f;
+	static constexpr float DEG_TO_RAD = 0.01745329251994329576923690768489f;
 	//constructors
 	Matrix() {}
 	Matrix(GLfloat val);

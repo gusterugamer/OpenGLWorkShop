@@ -6,15 +6,14 @@
 #include "DebugModeFunctions.h"
 
 class SceneManager {
+	friend class Renderer;	
 private:
 
 	//Resurse in care se citesc valorile din XML
 	std::unordered_map<int, std::shared_ptr<Camera>> cameraMap;	
 	std::unordered_map<int, std::shared_ptr<SceneObject>> sceneObjectsMap;		
-	std::vector<std::shared_ptr<LightProperties>> lights;	
-
-	BackgroundColorResource bckgroundResource;
-	AmbientalLightResource ambientLightResource;
+	std::vector<std::shared_ptr<LightProperties>> lights;
+	
 	DebugSettings debugResource;
 	int activateCameraId = 0;
 
@@ -34,7 +33,6 @@ public:
 	void Init();
 	void Draw();
 	void Update(ESContext* esContext,const float& deltaTime);
-	std::shared_ptr<Camera> GetCurrentCamera();	
-	const std::vector<std::shared_ptr<LightProperties>>& getLights();
+	std::shared_ptr<Camera> GetCurrentCamera();		
 	~SceneManager(); 	
 };

@@ -3,6 +3,8 @@
 #include "../Utilities/Math.h"
 
 class Camera {
+	friend class Renderer;
+	friend class SceneManager;
 private:	
     const GLfloat ratio = (GLfloat)(Globals::screenWidth / Globals::screenHeight);
 	GLfloat moveSpeed;
@@ -23,20 +25,18 @@ private:
 	Matrix worldMatrix;
 	Matrix perspectiveMatrix;	
 	Matrix T;
-	Matrix R;
-
-	ESContext* esContext;	
+	Matrix R;	
 public:
 
 	Camera() = delete;
 	Camera(Vector3 position, Vector3 target, GLfloat fov, GLfloat nearZ, GLfloat farZ, float moveSpeed, float RotateSpeed);
 
-	void moveOx(float directie);
-	void moveOy(int directie);
-	void moveOz(int directie);
-	void rotateOx(float directie);
-	void rotateOy(float directie);
-	void rotateOz(int directie);
+	void moveOx(char directie);
+	void moveOy(char directie);
+	void moveOz(char directie);
+	void rotateOx(char directie);
+	void rotateOy(char directie);
+	void rotateOz(char directie);
 	void Update(ESContext* esContext, const float& deltaTime);	
 	void UpdateWorldView();	
 
