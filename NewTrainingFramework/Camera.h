@@ -1,6 +1,6 @@
 #pragma once
 #include "Globals.h"
-#include "../Utilities/Math.h"
+#include "../Utilities/Mathematics.h"
 
 class Camera {
 	friend class Renderer;
