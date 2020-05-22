@@ -1,7 +1,10 @@
 #include "stdafx.h"
 #include "Camera.h"
+#include "../Utilities/glm/gtc/quaternion.hpp"
+#include "../Utilities/glm/gtx/quaternion.hpp"
+#include <iostream>
 
-Camera::Camera(Vector3 position,Vector3 target,GLfloat fov, GLfloat nearZ, GLfloat farZ, float moveSpeed, float rotateSpeed)
+Camera::Camera(glm::vec3& position, glm::vec3& target,GLfloat fov, GLfloat nearZ, GLfloat farZ, float moveSpeed, float rotateSpeed)
 	:
 	fov(fov),
 	nearZ(nearZ),
@@ -10,28 +13,52 @@ Camera::Camera(Vector3 position,Vector3 target,GLfloat fov, GLfloat nearZ, GLflo
 	rotateSpeed(rotateSpeed),
 	position(position),
 	target(target)
-{	
-	R.SetIdentity();	
-	perspectiveMatrix.SetPerspective(fov, ratio, nearZ, farZ);	
+{		
+	perspectiveMatrix = glm::perspective(fov, ratio, nearZ, farZ);	
 	UpdateWorldView();	
 }
 
-Vector3 Camera::Convert2Vec3(Vector4& Vector4)
+glm::vec3 Camera::Convert2Vec3(glm::vec4& Vec)
 {
-	return Vector3(Vector4.x, Vector4.y, Vector4.z);
+	return glm::vec3(Vec.x, Vec.y, Vec.z);
 }
 
-const Matrix& Camera::GetPerspectiveMatrix()const
+const glm::mat4& Camera::GetperspectiveMatrix()const
 {
 	return perspectiveMatrix;
 }
 
-const Matrix& Camera::GetViewMatrix() const 
+const glm::mat4& Camera::GetviewMatrix() const
 {
 	return viewMatrix;
 }
 
-const Vector3& Camera::GetPosition() const 
+void Camera::QuatRotationY(int mousePos)
+{
+	glm::quat Quaternion = glm::angleAxis(glm::radians((float)mousePos * 10.0f) * deltaTime, glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 matrot = glm::toMat4(Quaternion);
+
+	left = glm::vec3(matrot * glm::vec4(left, 1.0f));
+	forward = glm::vec3(matrot * glm::vec4(forward, 1.0f));
+	UP = glm::vec3(matrot * glm::vec4(UP, 1.0f));
+	target = glm::vec3(matrot * glm::vec4(target, 1.0f));
+	
+	UpdateWorldView();
+}
+
+void Camera::QuatRotationX(int mousePos)
+{	
+	glm::quat Quaternion = glm::angleAxis(glm::radians((float)mousePos*10.0f) * deltaTime,left);
+	glm::mat4 matrot= glm::toMat4(Quaternion);
+	
+	UP = glm::vec3(matrot * glm::vec4(UP,1.0f));
+	left = glm::vec3(matrot * glm::vec4(left, 1.0f));
+	forward = glm::vec3(matrot * glm::vec4(forward, 1.0f));
+	target = glm::vec3(matrot * glm::vec4(target,1.0f));
+	UpdateWorldView();
+}
+
+const glm::vec3& Camera::GetPosition() const 
 {
 	return position;	
 }
@@ -39,7 +66,7 @@ const Vector3& Camera::GetPosition() const
 void Camera::moveOx(char directie)
 {	
 	//xAxis = UP.Cross(zAxis).Normalize();	
-	Vector3 vectorDeplasare = xAxis * deltaTime * moveSpeed * directie;
+	glm::vec3 vectorDeplasare = left * deltaTime * moveSpeed * (float)directie;
 	position += vectorDeplasare;
 	target += vectorDeplasare;		
 	UpdateWorldView();
@@ -48,7 +75,7 @@ void Camera::moveOx(char directie)
 void Camera::moveOy(char directie)
 {	
 	//yAxis = zAxis.Cross(xAxis).Normalize();	
-	Vector3 vectorDeplasare = yAxis * moveSpeed*deltaTime  * (float)directie;
+	glm::vec3 vectorDeplasare = UP * moveSpeed*deltaTime  * (float)directie;
 	position += vectorDeplasare;
 	target += vectorDeplasare;	
 	UpdateWorldView();
@@ -57,7 +84,7 @@ void Camera::moveOy(char directie)
 void Camera::moveOz(char directie)
 {	
 	//zAxis = (position - target).Normalize();	
-	Vector3 vectorDeplasare = zAxis*moveSpeed * deltaTime * (float)directie;
+	glm::vec3 vectorDeplasare = forward *moveSpeed * deltaTime * (float)directie;
 	position += vectorDeplasare;
 	target += vectorDeplasare;
 	UpdateWorldView();
@@ -65,40 +92,42 @@ void Camera::moveOz(char directie)
 
 void Camera::rotateOx(char directie)
 {	
-	Matrix rotate;
-	rotate.SetRotationX(directie * deltaTime * rotateSpeed);	
-	UP = Convert2Vec3(Vector4(0.0f,1.0f,0.0f, 0.0f) * rotate);
-	UP = Convert2Vec3(Vector4 (UP, 0.0f)* worldMatrix).Normalize();	
-	Vector4 localTarget = Vector4(0.0f, 0.0f, -(target - position).Length(), 1.0f);
-	Vector4 rotatedTarget = localTarget * rotate;	
-	target = Convert2Vec3(rotatedTarget * worldMatrix);	
-	//zAxis = (position-target).Normalize();	
-//	yAxis = zAxis.Cross(xAxis).Normalize();
-	UpdateWorldView();
+	//QuatRotation(directie);
+//	glm::mat4 rotate;
+//	rotate.SetRotationX(directie * deltaTime * rotateSpeed);	
+//	UP = Convert2Vec3(glm::vec4(0.0f,1.0f,0.0f, 0.0f) * rotate);
+//	UP = Convert2Vec3(glm::vec4 (UP, 0.0f)* worldMatrix).Normalize();	
+//	glm::vec4 localTarget = glm::vec4(0.0f, 0.0f, -(target - position).Length(), 1.0f);
+//	glm::vec4 rotatedTarget = localTarget * rotate;	
+//	target = Convert2Vec3(rotatedTarget * worldMatrix);	
+//	//zAxis = (position-target).Normalize();	
+////	yAxis = zAxis.Cross(xAxis).Normalize();
+//	
+//	UpdateWorldView();
 }
 
 void Camera::rotateOy(char directie)
 {
-	Matrix rotate;
-	rotate = rotate.SetRotationY(rotateSpeed * deltaTime * directie);	
-	rotate = rotate.SetRotationY(directie * deltaTime * rotateSpeed);
-	Vector4 localTarget = Vector4(0, 0, -(target - position).Length(), 1.0f);
-	Vector4 rotatedTarget = localTarget * rotate;
-	target = Convert2Vec3(rotatedTarget * worldMatrix);	
-	//zAxis = (position - target).Normalize();
-	//xAxis = UP.Cross(zAxis).Normalize();	
+	//glm::mat4 rotate;
+	//rotate = rotate.SetRotationY(rotateSpeed * deltaTime * directie);	
+	//rotate = rotate.SetRotationY(directie * deltaTime * rotateSpeed);
+	//glm::vec4 localTarget = glm::vec4(0, 0, -(target - position).Length(), 1.0f);
+	//glm::vec4 rotatedTarget = localTarget * rotate;
+	//target = Convert2Vec3(rotatedTarget * worldMatrix);	
+	////zAxis = (position - target).Normalize();
+	////xAxis = UP.Cross(zAxis).Normalize();	
 	UpdateWorldView();
 }	
 
 void Camera::rotateOz(char directie)
 {
-	Matrix rotate;
+	/*glm::mat4 rotate;
 	rotate = rotate.SetRotationZ(rotateSpeed * deltaTime * directie);
-	UP = Convert2Vec3(Vector4(0.0f,1.0f,0.0f, 1.0f) * rotate).Normalize();
-	UP = Convert2Vec3(Vector4(UP, 0.0f)*worldMatrix);
-	Vector4 localTarget = Vector4(0, 0, -(target - position).Length(), 1.0f);
-	Vector4 rotatedTarget = localTarget * rotate;
-	target = Convert2Vec3(rotatedTarget * worldMatrix);	
+	UP = Convert2Vec3(glm::vec4(0.0f,1.0f,0.0f, 1.0f) * rotate).Normalize();
+	UP = Convert2Vec3(glm::vec4(UP, 0.0f)*worldMatrix);
+	glm::vec4 localTarget = glm::vec4(0, 0, -(target - position).Length(), 1.0f);
+	glm::vec4 rotatedTarget = localTarget * rotate;
+	target = Convert2Vec3(rotatedTarget * worldMatrix);	*/
 	//xAxis = UP.Cross(zAxis).Normalize();
 	//yAxis = zAxis.Cross(xAxis).Normalize();
 	UpdateWorldView();	
@@ -109,11 +138,11 @@ void Camera::Update(ESContext* esContext, const float& deltaTime)
 	this->deltaTime = deltaTime;	
 	if (esContext->kbd.GetKey(0x57))
 	{
-		moveOz(-1);
+		moveOz(1);
 	}	
 	if (esContext->kbd.GetKey(0x53))
 	{
-		moveOz(1);
+		moveOz(-1);
 	}
 	if (esContext->kbd.GetKey(0x41))
 	{
@@ -155,31 +184,22 @@ void Camera::Update(ESContext* esContext, const float& deltaTime)
 	{
 		rotateOz(-1);
 	}	
+	if (esContext->mouse.IsMouseButtonDown(VK_RBUTTON))
+	{
+		startMousePos = esContext->mouse.getPosition();
+	}
+	if (esContext->mouse.IsMouseButtonPressed(VK_RBUTTON))
+	{			
+		point = esContext->mouse.getPosition();	
+		int dx = startMousePos.first - point.first;
+		int dy = startMousePos.second - point.second;		
+		QuatRotationY(dx);	
+		QuatRotationX(dy);		
+		startMousePos = point;
+	}
 }
 
 void Camera::UpdateWorldView()
 {	
-
-	zAxis = (position - target).Normalize();
-	xAxis = UP.Cross(zAxis).Normalize();
-	yAxis = zAxis.Cross(xAxis).Normalize();
-
-	R.m[0][0] = xAxis.x;
-	R.m[0][1] = xAxis.y;
-	R.m[0][2] = xAxis.z;
-	R.m[1][0] = yAxis.x;
-	R.m[1][1] = yAxis.y;
-	R.m[1][2] = yAxis.z;
-	R.m[2][0] = zAxis.x;
-	R.m[2][1] = zAxis.y;
-	R.m[2][2] = zAxis.z;	
-
-	T=T.SetTranslation(position);
-
-	worldMatrix = R * T;
-	
-	T=T.SetTranslation(-position);
-	R = R.Transpose();
-
-	viewMatrix = T*R;	
+	viewMatrix = glm::lookAtRH(position,position+forward,UP);		
 }

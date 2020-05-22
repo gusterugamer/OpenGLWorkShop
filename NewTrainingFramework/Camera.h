@@ -1,6 +1,7 @@
 #pragma once
 #include "Globals.h"
 #include "../Utilities/Mathematics.h"
+#include "../Utilities/glm/glm.hpp"
 
 class Camera {
 	friend class Renderer;
@@ -14,22 +15,27 @@ private:
 	GLfloat fov;
 	GLfloat deltaTime;
 	
-	Vector3 position;
-	Vector3 target;	
-	Vector3 UP = Vector3(0.0f, 1.0f, 0.0f);
-	Vector3 xAxis;	
-	Vector3 zAxis;
-	Vector3 yAxis;		
+	glm::vec3 position;
+	glm::vec3 target;	
+	glm::vec3 UP = glm::vec3(0.0f, 1.0f, 0.0f);
+	glm::vec3 forward = glm::vec3(0.0f, 0.0f, -1.0f);
+	glm::vec3 left = glm::vec3(1.0f, 0.0f, 0.0f);
+	glm::vec3 xAxis;	
+	glm::vec3 zAxis;
+	glm::vec3 yAxis;		
 
-	Matrix viewMatrix;
-	Matrix worldMatrix;
-	Matrix perspectiveMatrix;	
-	Matrix T;
-	Matrix R;	
+	glm::mat4 viewMatrix;
+	glm::mat4 worldMatrix;
+	glm::mat4 perspectiveMatrix;	
+	glm::mat4 T;
+	glm::mat4 R;	
+
+	std::pair<int, int> startMousePos;
+	std::pair<int, int> point;
 public:
 
 	Camera() = delete;
-	Camera(Vector3 position, Vector3 target, GLfloat fov, GLfloat nearZ, GLfloat farZ, float moveSpeed, float RotateSpeed);
+	Camera(glm::vec3& position, glm::vec3& target, GLfloat fov, GLfloat nearZ, GLfloat farZ, float moveSpeed, float rotateSpeed);
 
 	void moveOx(char directie);
 	void moveOy(char directie);
@@ -40,9 +46,14 @@ public:
 	void Update(ESContext* esContext, const float& deltaTime);	
 	void UpdateWorldView();	
 
-    const Vector3& GetPosition() const;
-	Vector3 Convert2Vec3(Vector4 & vector4);	
+    const glm::vec3& GetPosition() const;
+	glm::vec3 Convert2Vec3(glm::vec4 & vec);	
 
-	const Matrix& GetPerspectiveMatrix() const;
-	const Matrix& GetViewMatrix() const;	
+	const glm::mat4& GetperspectiveMatrix() const;
+	const glm::mat4& GetviewMatrix() const;	
+
+	///TEMPORAR///
+	void QuatRotationY(int mousePos);
+	void QuatRotationX(int mousePos);
+	///TEMPORAR///
 };

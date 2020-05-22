@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "Fire.h"
 #include "Renderer.h"
+#include "../Utilities/glm/gtc/quaternion.hpp"
+#include "../Utilities/glm/gtx/quaternion.hpp"
 
 Fire::Fire(FireProperties & sop)
 	:sop(sop)
@@ -21,11 +23,16 @@ Fire::~Fire()
 
 void Fire::Draw()
 {
-	RM = RMx.SetRotationX(sop.rotation.x) * RMy.SetRotationY(sop.rotation.y) * RMz.SetRotationZ(sop.rotation.z);
-	SM = SM.SetScale(sop.scale);
-	TM = TM.SetTranslation(sop.translation);
+	glm::mat4 RM;
+	glm::mat4 SM;
+	glm::mat4 TM;
+	glm::mat4 modelMatrix;
+	
+	RM = glm::toMat4(glm::quat(glm::radians(sop.rotation)));
+	SM = glm::scale(glm::mat4(1.0f), sop.scale);
+	TM = glm::translate(glm::mat4(1.0f), sop.translation);
 
-	modelMatrix = SM * RM * TM;	
+	modelMatrix = TM * RM * SM;
 
 	Renderer::DrawMultiTexture(modelMatrix,*pMdl, *pShader, textures);	
 

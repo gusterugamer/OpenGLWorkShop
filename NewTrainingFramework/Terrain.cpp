@@ -3,6 +3,8 @@
 #include "DebugModeFunctions.h"
 #include "SceneManager.h"
 #include "Renderer.h"
+#include "../Utilities/glm/gtc/quaternion.hpp"
+#include "../Utilities/glm/gtx/quaternion.hpp"
 
 Terrain::Terrain(TerrainProperties& sop)
 	:sop(sop)
@@ -21,13 +23,18 @@ Terrain::~Terrain()
 void Terrain::Draw()
 {
 
-	//Calculare model matrix teren;
-	RM = RMx.SetRotationX(sop.rotation.x) * RMy.SetRotationY(sop.rotation.y) *
-		RMz.SetRotationZ(sop.rotation.z);
-	SM = SM.SetScale(sop.scale);
-	TM = TM.SetTranslation(sop.translation);
+	//Calculare model glm::mat4 teren;
+	glm::mat4 RM;
+	glm::mat4 SM;
+	glm::mat4 TM;
+	glm::mat4 modelMatrix;
 
-	modelMatrix = SM * RM * TM;
+	glm::quat quaternion = glm::quat(sop.rotation);
+	RM = glm::toMat4(quaternion);
+	SM = glm::scale(glm::mat4(1.0f), sop.scale);
+	TM = glm::translate(glm::mat4(1.0f), sop.translation);
+
+	modelMatrix = TM * RM * SM;
 
 	Renderer::DrawBlendedTextures(modelMatrix,vb,ib,*pShader,terrainTexMap);
 
@@ -49,7 +56,7 @@ void Terrain::Init(){
 		{
 			Vertex v;
 			//Centrare teren la pozitia camerei
-			v.pos = Vector3(
+			v.pos = glm::vec3(
 				((x - (float)std::ceil(sop.numarCelule / 2))*sop.dimensiuneCelule) - (float)sop.dimensiuneCelule / 2,
 				-sop.offSetY,
 				-((z - (float)std::ceil(sop.numarCelule / 2))*sop.dimensiuneCelule + (float)sop.dimensiuneCelule / 2)
@@ -57,10 +64,10 @@ void Terrain::Init(){
 
 
 			//Generare UV celule
-			v.uv = Vector2(x, z);
+			v.uv = glm::vec2(x, z);
 
 			//Generare UV blend texture
-			v.uvblend = Vector2(x / sop.numarCelule, z / sop.numarCelule);
+			v.uvblend = glm::vec2(x / sop.numarCelule, z / sop.numarCelule);
 			vert.push_back(v);
 		}
 

@@ -3,13 +3,18 @@
 #include "../Utilities/esUtil.h"
 #include "Texture.h"
 #include <memory>
+#include <unordered_map>
 
 class Shader
 {
 private:	
 	 std::shared_ptr<ShaderResource> sr;
 
-	GLuint program, vertexShader, fragmentShader;	
+	GLuint program, vertexShader, fragmentShader;
+	std::unordered_map<std::string, int> locationCache;
+
+private:
+	GLint getLocation(const std::string& name);
 
 public:
 	Shader(std::shared_ptr<ShaderResource> sr);
@@ -24,33 +29,34 @@ public:
 	//Unforms
 
 	//Float
+	
 	void AddUniform1f(const char* name, float value);
 	void AddUniform2f(const char* name, float value1, float value2);
-	void AddUniform2f(const char* name, const Vector2& vec);
+	void AddUniform2f(const char* name, const glm::vec2& vec);
 	void AddUniform3f(const char* name, float value1, float value2, float value3);	
-	void AddUniform3f(const char* name, const Vector3& vec);
+	void AddUniform3f(const char* name, const glm::vec3& vec);
 	void AddUniformInArray1f(const char* arrayName, const int& index, const char* propertyName, float value);
 	void AddUniformInArray2f(const char* arrayName, const int& index, float value1, const char* propertyName,float value2);
-	void AddUniformInArray2f(const char* arrayName, const int& index, const char* propertyName,  const Vector2& vec);
+	void AddUniformInArray2f(const char* arrayName, const int& index, const char* propertyName,  const glm::vec2& vec);
 	void AddUniformInArray3f(const char* arrayName, const int& index, const char* propertyName, float value1, float value2, float value3);
-	void AddUniformInArray3f(const char* arrayName, const int& index, const char* propertyName, const Vector3& vec);
+	void AddUniformInArray3f(const char* arrayName, const int& index, const char* propertyName, const glm::vec3& vec);
 
 	//Integer
 	void AddUniform1i(const char* name, int value);
 	void AddUniform2i(const char* name, int value1, int value2);
-	//TODO: Add functions for Vector2 of ints
+	//TODO: Add functions for glm::vec2 of ints
 	void AddUniform3i(const char* name, int value1, int value2, int value3);
-	//TODO: Add functions for Vector3 of ints
+	//TODO: Add functions for glm::vec3 of ints
 	void AddUniformInArray1i(const char* arrayName, const int& index, const char* propertyName, int value);
 	void AddUniformInArray2i(const char* arrayName, const int& index, const char* propertyName, int value1, int value2);
-	//TODO: Add functions for Vector2 of ints
+	//TODO: Add functions for glm::vec2 of ints
 	void AddUniformInArray3i(const char* arrayName, const int& index, const char* propertyName, int value1, int value2, int value3);
-	//TODO: Add functions for Vector3 of ints
+	//TODO: Add functions for glm::vec3 of ints
 
-	//Matrix 
-	void AddMatrix2fv(const char* name, int count, bool transpose,const Matrix& mat);
-	void AddMatrix3fv(const char* name, int count, bool transpose,const Matrix& mat);
-	void AddMatrix4fv(const char* name, int count, bool transpose,const Matrix& mat);
+	//glm::mat4 
+	void AddMatrix2fv(const char* name, int count, bool transpose,const glm::mat2& mat);
+	void AddMatrix3fv(const char* name, int count, bool transpose,const glm::mat3& mat);
+	void AddMatrix4fv(const char* name, int count, bool transpose,const glm::mat4& mat);
 
 	//Texture
 	void AddTexture(const char* uniformName, const Texture& tex);

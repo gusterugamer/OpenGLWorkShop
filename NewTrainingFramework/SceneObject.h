@@ -7,9 +7,9 @@
 #include "VertexBuffer.h"
 
 struct Material {
-	Vector3 ambiental = { 1.0f,1.0f,1.0f };
-	Vector3 diffuse = { 1.0f,1.0f,1.0f };
-	Vector3 specular = { 1.0f,1.0f,1.0f };
+	glm::vec3 ambiental = { 1.0f,1.0f,1.0f };
+	glm::vec3 diffuse = { 1.0f,1.0f,1.0f };
+	glm::vec3 specular = { 1.0f,1.0f,1.0f };
 	float shininess = 0.5f;
 };
 
@@ -21,17 +21,17 @@ struct SceneObjectProperties {
 	std::string blend;
 	std::string name;
 	int textureId = -1;
-	Vector3 translation;
-	Vector3 rotation;
-	Vector3 scale;
+	glm::vec3 translation;
+	glm::vec3 rotation;
+	glm::vec3 scale;
 	std::vector<int> followCameraId;
 	std::string trajectoryType;
 	std::string trajectoryIteration;
 	std::string trajectoryDirection;
-	Vector3 trajectoryEndPoint;
+	glm::vec3 trajectoryEndPoint;
 	float trajectorySpeed = 0.0f;
 	std::vector<int> lights;
-	Vector3 color = { 1.0f, 1.0f, 1.0f }; //culoare implicit daca modelul nu are textura incarcata(rosu)
+	glm::vec3 color = { 1.0f, 1.0f, 1.0f }; //culoare implicit daca modelul nu are textura incarcata(rosu)
 	float reflectivity = 0.0f; //using before adding material class
 	float shineDamper = 0.0f; //using before adding material class
 	Material mat;
@@ -49,13 +49,13 @@ protected:
 	//Proprietati Obiect		
 	SceneObjectProperties sop;
 
-	Matrix RMx;
-	Matrix RMy;
-	Matrix RMz;
-	Matrix SM;
-	Matrix TM;
-	Matrix modelMatrix;
-	Matrix RM;
+	glm::mat4 RMx;
+	glm::mat4 RMy;
+	glm::mat4 RMz;
+	glm::mat4 SM;
+	glm::mat4 TM;
+	glm::mat4 modelMatrix;
+	glm::mat4 RM;
 
 public:
 

@@ -72,11 +72,11 @@ TypeOfLight Light::getType() const noexcept
 {
 	return lp.type;
 }
-
 void Light::Draw()
 {
 	Renderer::DrawDebug(sop,vb,ib, *pShader, *pTex);
 }
+
 
 void Light::Update(ESContext* esContext, const float& deltaTime)
 {
@@ -88,13 +88,13 @@ void Light::BuildQuad()
 		for (float x = 1; x < 3; x++)
 		{
 			Vertex v;
-			v.pos = Vector3(
+			v.pos = glm::vec3(
 				(x  + (float)std::pow(-1,x) *(float)quadDimension/2),
 				(y  + (float)std::pow(-1,y) *(float)quadDimension/2),
 				0
 			);
-			v.uv = Vector2(x-1, y-1);
-			v.color = Vector3(1.0, 1.0, 1.0);
+			v.uv = glm::vec2(x-1, y-1);
+			v.color = glm::vec3(1.0, 1.0, 1.0);
 			vert.push_back(v);
 			
 		}

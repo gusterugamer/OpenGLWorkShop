@@ -4,6 +4,16 @@
 #include <iostream>
 #include <chrono>
 
+GLint Shader::getLocation(const std::string& name)
+{	
+	if (!locationCache[name])
+	{
+		locationCache[name] = glGetUniformLocation(program, name.c_str());		
+		return locationCache[name];
+	}
+	return locationCache[name];
+}
+
 Shader::Shader(std::shared_ptr<ShaderResource> sr)
 {
 	this->sr = sr;
@@ -45,31 +55,31 @@ void Shader::AddAttrib(const char* name, const int& size, const int& type, const
 //Floats
 void Shader::AddUniform1f(const char* name, float value)
 {
-	GLint loc = glGetUniformLocation(program, name);
+	GLint loc = getLocation(name);
 	GLCall(glUniform1f(loc, value));
 }
 
 void Shader::AddUniform2f(const char* name, float value1, float value2)
 {
-	GLint loc = glGetUniformLocation(program, name);
+	GLint loc = getLocation(name);
 	GLCall(glUniform2f(loc, value1, value2));
 }
 
-void Shader::AddUniform2f(const char* name, const Vector2& vec)
+void Shader::AddUniform2f(const char* name, const glm::vec2& vec)
 {
-	GLint loc = glGetUniformLocation(program, name);
+	GLint loc = getLocation(name);
 	GLCall(glUniform2f(loc, vec.x, vec.y));
 }
 
 void Shader::AddUniform3f(const char* name, float value1, float value2, float value3)
 {
-	GLint loc = glGetUniformLocation(program, name);
+	GLint loc = getLocation(name);
 	GLCall(glUniform3f(loc, value1, value2, value3));
 }
 
-void Shader::AddUniform3f(const char* name, const Vector3& vec)
+void Shader::AddUniform3f(const char* name, const glm::vec3& vec)
 {
-	GLint loc = glGetUniformLocation(program, name);
+	GLint loc = getLocation(name);
 	GLCall(glUniform3f(loc, vec.x, vec.y, vec.z));
 }
 
@@ -82,7 +92,8 @@ void Shader::AddUniformInArray1f(const char* arrayName, const int& index, const 
 	strcat_s(name, "].");
 	strcat_s(name, propertyName);
 
-	GLint loc = glGetUniformLocation(program, name);
+	GLint loc = getLocation(name);
+
 	GLCall(glUniform1f(loc, value));	
 }
 
@@ -95,11 +106,11 @@ void Shader::AddUniformInArray2f(const char* arrayName, const int& index, float 
 	strcat_s(name, "].");
 	strcat_s(name, propertyName);
 
-	GLint loc = glGetUniformLocation(program, name);
+	GLint loc = getLocation(name);
 	GLCall(glUniform2f(loc, value1,value2));
 }
 
-void Shader::AddUniformInArray2f(const char* arrayName, const int& index, const char* propertyName, const Vector2& vec)
+void Shader::AddUniformInArray2f(const char* arrayName, const int& index, const char* propertyName, const glm::vec2& vec)
 {
 	char name[255];
 	strcpy_s(name, arrayName);
@@ -108,7 +119,7 @@ void Shader::AddUniformInArray2f(const char* arrayName, const int& index, const 
 	strcat_s(name, "].");
 	strcat_s(name, propertyName);
 
-	GLint loc = glGetUniformLocation(program, name);
+	GLint loc = getLocation(name);
 	GLCall(glUniform2f(loc, vec.x, vec.y));
 }
 
@@ -121,11 +132,11 @@ void Shader::AddUniformInArray3f(const char* arrayName, const int& index, const 
 	strcat_s(name, "].");
 	strcat_s(name, propertyName);
 
-	GLint loc = glGetUniformLocation(program, name);
+	GLint loc = getLocation(name);
 	GLCall(glUniform3f(loc, value1, value2, value3));
 }
 
-void Shader::AddUniformInArray3f(const char* arrayName, const int& index, const char* propertyName, const Vector3& vec)
+void Shader::AddUniformInArray3f(const char* arrayName, const int& index, const char* propertyName, const glm::vec3& vec)
 {
 	char name[255];
 	strcpy_s(name, arrayName);
@@ -134,26 +145,26 @@ void Shader::AddUniformInArray3f(const char* arrayName, const int& index, const 
 	strcat_s(name, "].");
 	strcat_s(name, propertyName);
 
-	GLint loc = glGetUniformLocation(program, name);
+	GLint loc = getLocation(name);
 	GLCall(glUniform3f(loc, vec.x, vec.y, vec.z));
 }
 
 //Integers
 void Shader::AddUniform1i(const char* name, int value)
 {
-	GLint loc = glGetUniformLocation(program, name);
+	GLint loc = getLocation(name);
 	GLCall(glUniform1i(loc, value));
 }
 
 void Shader::AddUniform2i(const char* name, int value1, int value2)
 {
-	GLint loc = glGetUniformLocation(program, name);
+	GLint loc = getLocation(name);
 	GLCall(glUniform2i(loc, value1, value2));
 }
 
 void Shader::AddUniform3i(const char* name, int value1, int value2, int value3)
 {
-	GLint loc = glGetUniformLocation(program, name);
+	GLint loc = getLocation(name);
 	GLCall(glUniform3i(loc, value1, value2, value3));
 }
 
@@ -166,7 +177,7 @@ void Shader::AddUniformInArray1i(const char* arrayName, const int& index, const 
 	strcat_s(name, "].");
 	strcat_s(name, propertyName);
 
-	GLint loc = glGetUniformLocation(program, name);
+	GLint loc = getLocation(name);
 	GLCall(glUniform1i(loc, value));
 }
 
@@ -179,7 +190,7 @@ void Shader::AddUniformInArray2i(const char* arrayName, const int& index, const 
 	strcat_s(name, "].");
 	strcat_s(name, propertyName);
 
-	GLint loc = glGetUniformLocation(program, name);
+	GLint loc = getLocation(name);
 	GLCall(glUniform2i(loc, value1, value2));
 }
 
@@ -192,28 +203,28 @@ void Shader::AddUniformInArray3i(const char* arrayName, const int& index, const 
 	strcat_s(name, "].");
 	strcat_s(name, propertyName);
 
-	GLint loc = glGetUniformLocation(program, name);
+	GLint loc = getLocation(name);
 	GLCall(glUniform3i(loc, value1, value2, value3));
 }
 
 //Matrix
 
-void Shader::AddMatrix2fv(const char* name, int count, bool transpose,const Matrix& mat)
+void Shader::AddMatrix2fv(const char* name, int count, bool transpose,const glm::mat2& mat)
 {
-	GLint loc = glGetUniformLocation(program, name);
-	GLCall(glUniformMatrix4fv(loc, count, transpose, (GLfloat*)mat.m));	
+	GLint loc = getLocation(name);
+	GLCall(glUniformMatrix4fv(loc, count, transpose, &mat[0][0]));
 }
 																	  
-void Shader::AddMatrix3fv(const char* name, int count, bool transpose,const Matrix& mat)
+void Shader::AddMatrix3fv(const char* name, int count, bool transpose,const glm::mat3& mat)
 {
-	GLint loc = glGetUniformLocation(program, name);
-	GLCall(glUniformMatrix4fv(loc, count, transpose, (GLfloat*)mat.m));
+	GLint loc = getLocation(name);
+	GLCall(glUniformMatrix4fv(loc, count, transpose, &mat[0][0]));
 }
 																	 
-void Shader::AddMatrix4fv(const char* name, int count, bool transpose,const Matrix& mat)
+void Shader::AddMatrix4fv(const char* name, int count, bool transpose,const glm::mat4& mat)
 {
-	GLint loc = glGetUniformLocation(program, name);
-	GLCall(glUniformMatrix4fv(loc, count, transpose, (GLfloat*)mat.m));
+	GLint loc = getLocation(name);
+	GLCall(glUniformMatrix4fv(loc, count, transpose, &mat[0][0]));
 }
 
 //Texture
@@ -234,7 +245,7 @@ void Shader::AddMultiTexture(const char* uniformName, const int& index, const st
 	strcat_s(name, std::to_string(index).c_str());
 	strcat_s(name, "]");	
 
-	GLint loc = glGetUniformLocation(program, name);
+	GLint loc = getLocation(name);
 	GLCall(glActiveTexture(GL_TEXTURE0 + index));
 	GLCall(glUniform1i(loc, 0+index));
 	tex->Bind();

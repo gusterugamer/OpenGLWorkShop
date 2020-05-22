@@ -286,7 +286,7 @@ void SceneManager::ReadXML()
 			}
 			else
 			{
-				Vector3 ambiental;
+				glm::vec3 ambiental;
 				int shaderId = 7;
 				if (xmlnode* pSubNode = pRoot_SubNode->first_node("ambiental"))
 				{					
@@ -336,7 +336,7 @@ void SceneManager::ReadXML()
 						sop->translation.y = std::stof(ppNode->first_node("translation")->first_node("y")->value());
 						sop->translation.z = std::stof(ppNode->first_node("translation")->first_node("z")->value());
 						LR->position = sop->translation;
-						sop->scale = Vector3(1.0, 1.0, 1.0);
+						sop->scale = glm::vec3(1.0, 1.0, 1.0);
 						sceneObjectsMap[id] = std::make_shared<Light>(*sop.release(), *LR);		
 						lights.push_back(LR);
 					}					
@@ -377,7 +377,7 @@ void SceneManager::ReadXML()
 						sop->translation.y = std::stof(ppNode->first_node("translation")->first_node("y")->value());
 						sop->translation.z = std::stof(ppNode->first_node("translation")->first_node("z")->value());
 						LR->position = sop->translation;
-						sop->scale = Vector3(1.0, 1.0, 1.0);
+						sop->scale = glm::vec3(1.0, 1.0, 1.0);
 						sceneObjectsMap[id] = std::make_shared<Light>(*sop.release(), *LR);
 						lights.push_back(LR);
 					}
@@ -414,7 +414,7 @@ void SceneManager::ReadXML()
 						sop->translation.x = std::stof(ppNode->first_node("translation")->first_node("x")->value());
 						sop->translation.y = std::stof(ppNode->first_node("translation")->first_node("y")->value());
 						sop->translation.z = std::stof(ppNode->first_node("translation")->first_node("z")->value());						
-						sop->scale = Vector3(1.0, 1.0, 1.0);
+						sop->scale = glm::vec3(1.0, 1.0, 1.0);
 						sceneObjectsMap[id] = std::make_shared<Light>(*sop.release(), *LR);
 						lights.push_back(LR);
 					}

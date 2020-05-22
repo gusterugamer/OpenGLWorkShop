@@ -9,7 +9,6 @@ public:
 	Light(SceneObjectProperties& sop, LightProperties& lp);
 	void ChangeLightType(TypeOfLight type);
 	TypeOfLight getType() const noexcept;	
-
 	void Draw() override;
 	void Update(ESContext* esContext, const float& deltaTime) override;
 

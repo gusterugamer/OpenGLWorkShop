@@ -3,6 +3,8 @@
 #include "DebugModeFunctions.h"
 #include "SceneManager.h"
 #include "Renderer.h"
+#include "../Utilities/glm/gtc/quaternion.hpp"
+#include "../Utilities/glm/gtx/quaternion.hpp"
 
 Skybox::Skybox(SkyBoxProps& sop)
 	:sop(sop)
@@ -18,18 +20,23 @@ Skybox::~Skybox()
 
 void Skybox::Draw()
 {	
-	RM = RMx.SetRotationX(sop.rotation.x) * RMy.SetRotationY(sop.rotation.y) *
-		RMz.SetRotationZ(sop.rotation.z);
-	SM = SM.SetScale(sop.scale);
-	TM = TM.SetTranslation(sop.translation);
+	glm::mat4 RM;
+	glm::mat4 SM;
+	glm::mat4 TM;
+	glm::mat4 modelMatrix;
 
-	modelMatrix = SM*  RM * TM;
+	glm::quat quaternion = glm::quat(glm::radians(sop.rotation));
+	RM = glm::toMat4(quaternion);
+	SM = glm::scale(glm::mat4(1.0f), sop.scale);
+	TM = glm::translate(glm::mat4(1.0f), sop.translation);
+
+	modelMatrix = TM * RM * SM;
 	
 	Renderer::DrawSkyBox(modelMatrix,*pMdl, *pShader, *pTex);	
 }
 
 void Skybox::Update(ESContext* esContext,const float & deltaTime)
 {
-	Vector3 CameraPos = SceneManager::GetInstance()->GetCurrentCamera()->GetPosition();
+	glm::vec3 CameraPos = SceneManager::GetInstance()->GetCurrentCamera()->GetPosition();
 	sop.translation = CameraPos;
 }

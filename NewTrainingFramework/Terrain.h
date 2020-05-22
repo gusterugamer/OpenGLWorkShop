@@ -9,7 +9,7 @@ struct TerrainProperties : SceneObjectProperties
 	float offSetY = -10.0f;
 	int numarCelule = 5;
 	int dimensiuneCelule = 5;
-	Vector3 height = Vector3(0.0f,0.0f,0.0f);
+	glm::vec3 height = glm::vec3(0.0f,0.0f,0.0f);
 };
 
 class Terrain : public SceneObject

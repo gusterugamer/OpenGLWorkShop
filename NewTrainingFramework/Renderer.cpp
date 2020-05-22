@@ -1,13 +1,15 @@
 #include "stdafx.h"
 #include "Renderer.h"
 #include "DebugModeFunctions.h"
+#include "../Utilities/glm/gtc/quaternion.hpp"
+#include "../Utilities/glm/gtx/quaternion.hpp"
 
 SceneManager* Renderer::SM = nullptr;
 
 void Renderer::Draw(const SceneObjectProperties& sop, const Model& model, Shader& shader, const Texture& tex)
 {
-	const Matrix& viewMatrix = SM->cameraMap[SM->activateCameraId]->viewMatrix;
-	const Matrix& perspectiveMatrix = SM->cameraMap[SM->activateCameraId]->perspectiveMatrix;
+	const glm::mat4& viewMatrix = SM->cameraMap[SM->activateCameraId]->viewMatrix;
+	const glm::mat4& perspectiveMatrix = SM->cameraMap[SM->activateCameraId]->perspectiveMatrix;
 
 	GLCall(glUseProgram(shader.GetProgramId()));
 
@@ -19,11 +21,11 @@ void Renderer::Draw(const SceneObjectProperties& sop, const Model& model, Shader
 	shader.AddTexture("u_texture", tex);	
 
 	//ModelAttributes
-	shader.AddAttrib("a_pos", sizeof(Vector3) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, pos));
+	shader.AddAttrib("a_pos", sizeof(glm::vec3) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, pos));
 	
-	shader.AddAttrib("a_normal", sizeof(Vector3) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, norm));
+	shader.AddAttrib("a_normal", sizeof(glm::vec3) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, norm));
 	
-	shader.AddAttrib("a_uv", sizeof(Vector2) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, uv));
+	shader.AddAttrib("a_uv", sizeof(glm::vec2) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, uv));
 	
 	
 	shader.AddUniform3f("u_cameraPos", SM->cameraMap[SM->activateCameraId]->position);
@@ -78,19 +80,17 @@ void Renderer::Draw(const SceneObjectProperties& sop, const Model& model, Shader
 	}
 
 	//Matrices
-	//Transform (or Model) matrix calculation
-	Matrix RMx;
-	Matrix RMy;
-	Matrix RMz;
-	Matrix SM;
-	Matrix TM;
-	Matrix modelMatrix;
-	Matrix RM;
+	//Transform (or Model) glm::mat4 calculation
+	glm::mat4 RM;
+	glm::mat4 SM;
+	glm::mat4 TM;
+	glm::mat4 modelMatrix;
 
-	RM = RMx.SetRotationX(sop.rotation.x) * RMy.SetRotationY(sop.rotation.y) *
-		RMz.SetRotationZ(sop.rotation.z);
-	SM = SM.SetScale((Vector3)sop.scale);
-	TM = TM.SetTranslation((Vector3)sop.translation);	modelMatrix = SM * TM * RM;
+	glm::quat quaternion = glm::quat(glm::radians(sop.rotation));
+	RM = glm::toMat4(quaternion);
+	SM = glm::scale(glm::mat4(1.0f), sop.scale);
+	TM = glm::translate(glm::mat4(1.0f), sop.translation);
+	modelMatrix =TM * RM * SM;
 
 	
 	shader.AddMatrix4fv("u_view", 1, GL_FALSE, viewMatrix);
@@ -101,10 +101,10 @@ void Renderer::Draw(const SceneObjectProperties& sop, const Model& model, Shader
 	GLCall(glDrawElements(GL_TRIANGLES, model.GetIb().GetCount(), GL_UNSIGNED_SHORT, nullptr));
 }
 
-void Renderer::DrawBlendedTextures(const Matrix& modelMatrix, Model& model, Shader& shader, const std::vector<std::shared_ptr<Texture>>& tex)
+void Renderer::DrawBlendedTextures(const glm::mat4& modelMatrix, Model& model, Shader& shader, const std::vector<std::shared_ptr<Texture>>& tex)
 {
-	const Matrix& viewMatrix = SM->cameraMap[SM->activateCameraId]->viewMatrix;
-	const Matrix& perspectiveMatrix = SM->cameraMap[SM->activateCameraId]->perspectiveMatrix;
+	const glm::mat4& viewMatrix = SM->cameraMap[SM->activateCameraId]->viewMatrix;
+	const glm::mat4& perspectiveMatrix = SM->cameraMap[SM->activateCameraId]->perspectiveMatrix;
 
 	GLCall(glUseProgram(shader.GetProgramId()));
 
@@ -116,9 +116,9 @@ void Renderer::DrawBlendedTextures(const Matrix& modelMatrix, Model& model, Shad
 		shader.AddMultiTexture("u_texture", i, tex[i]);
 	}
 
-	shader.AddAttrib("a_pos", sizeof(Vector3) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, pos));
-	shader.AddAttrib("a_uv", sizeof(Vector2) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, uv));
-	shader.AddAttrib("a_uvblend", sizeof(Vector2) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, uvblend));	
+	shader.AddAttrib("a_pos", sizeof(glm::vec3) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, pos));
+	shader.AddAttrib("a_uv", sizeof(glm::vec2) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, uv));
+	shader.AddAttrib("a_uvblend", sizeof(glm::vec2) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, uvblend));	
 
 	shader.AddMatrix4fv("u_view", 1, GL_FALSE, viewMatrix);
 	shader.AddMatrix4fv("u_model", 1, GL_FALSE, modelMatrix);
@@ -127,10 +127,10 @@ void Renderer::DrawBlendedTextures(const Matrix& modelMatrix, Model& model, Shad
 	GLCall(glDrawElements(GL_TRIANGLES, model.GetIb().GetCount(), GL_UNSIGNED_SHORT, nullptr));
 }
 
-void Renderer::DrawBlendedTextures(const Matrix& modelMatrix, const VertexBuffer& vb, const IndexBuffer& ib, Shader& shader, const std::vector<std::shared_ptr<Texture>>& tex)
+void Renderer::DrawBlendedTextures(const glm::mat4& modelMatrix, const VertexBuffer& vb, const IndexBuffer& ib, Shader& shader, const std::vector<std::shared_ptr<Texture>>& tex)
 {
-	const Matrix& viewMatrix = SM->cameraMap[SM->activateCameraId]->viewMatrix;
-	const Matrix& perspectiveMatrix = SM->cameraMap[SM->activateCameraId]->perspectiveMatrix;
+	const glm::mat4& viewMatrix = SM->cameraMap[SM->activateCameraId]->viewMatrix;
+	const glm::mat4& perspectiveMatrix = SM->cameraMap[SM->activateCameraId]->perspectiveMatrix;
 
 	GLCall(glUseProgram(shader.GetProgramId()));
 
@@ -142,9 +142,9 @@ void Renderer::DrawBlendedTextures(const Matrix& modelMatrix, const VertexBuffer
 		shader.AddMultiTexture("u_texture", i, tex[i]);
 	}
 
-	shader.AddAttrib("a_pos", sizeof(Vector3) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, pos));
-	shader.AddAttrib("a_uv", sizeof(Vector2) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, uv));
-	shader.AddAttrib("a_uvblend", sizeof(Vector2) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, uvblend));
+	shader.AddAttrib("a_pos", sizeof(glm::vec3) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, pos));
+	shader.AddAttrib("a_uv", sizeof(glm::vec2) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, uv));
+	shader.AddAttrib("a_uvblend", sizeof(glm::vec2) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, uvblend));
 
 	shader.AddMatrix4fv("u_view", 1, GL_FALSE, viewMatrix);
 	shader.AddMatrix4fv("u_model", 1, GL_FALSE, modelMatrix);
@@ -153,10 +153,10 @@ void Renderer::DrawBlendedTextures(const Matrix& modelMatrix, const VertexBuffer
 	GLCall(glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_SHORT, nullptr));	
 }
 
-void Renderer::DrawMultiTexture(const Matrix& modelMatrix, Model& model, Shader& shader, const std::vector<std::shared_ptr<Texture>>& tex)
+void Renderer::DrawMultiTexture(const glm::mat4& modelMatrix, Model& model, Shader& shader, const std::vector<std::shared_ptr<Texture>>& tex)
 {
-	const Matrix& viewMatrix = SM->cameraMap[SM->activateCameraId]->viewMatrix;
-	const Matrix& perspectiveMatrix = SM->cameraMap[SM->activateCameraId]->perspectiveMatrix;
+	const glm::mat4& viewMatrix = SM->cameraMap[SM->activateCameraId]->viewMatrix;
+	const glm::mat4& perspectiveMatrix = SM->cameraMap[SM->activateCameraId]->perspectiveMatrix;
 
 	GLCall(glUseProgram(shader.GetProgramId()));
 
@@ -168,8 +168,8 @@ void Renderer::DrawMultiTexture(const Matrix& modelMatrix, Model& model, Shader&
 		shader.AddMultiTexture("u_texture", i, tex[i]);
 	}
 
-	shader.AddAttrib("a_pos", sizeof(Vector3) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, pos));
-	shader.AddAttrib("a_uv", sizeof(Vector2) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, uv));
+	shader.AddAttrib("a_pos", sizeof(glm::vec3) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, pos));
+	shader.AddAttrib("a_uv", sizeof(glm::vec2) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, uv));
 
 	shader.AddMatrix4fv("u_view", 1, GL_FALSE, viewMatrix);
 	shader.AddMatrix4fv("u_model", 1, GL_FALSE, modelMatrix);
@@ -178,10 +178,10 @@ void Renderer::DrawMultiTexture(const Matrix& modelMatrix, Model& model, Shader&
 	GLCall(glDrawElements(GL_TRIANGLES, model.GetIb().GetCount(), GL_UNSIGNED_SHORT, nullptr));
 }
 
-void Renderer::DrawSkyBox(const Matrix& modelMatrix, Model& model, Shader& shader, const Texture& tex)
+void Renderer::DrawSkyBox(const glm::mat4& modelMatrix, Model& model, Shader& shader, const Texture& tex)
 {
-	const Matrix& viewMatrix = SM->cameraMap[SM->activateCameraId]->viewMatrix;
-	const Matrix& perspectiveMatrix = SM->cameraMap[SM->activateCameraId]->perspectiveMatrix;
+	const glm::mat4& viewMatrix = SM->cameraMap[SM->activateCameraId]->viewMatrix;
+	const glm::mat4& perspectiveMatrix = SM->cameraMap[SM->activateCameraId]->perspectiveMatrix;
 
 	GLCall(glUseProgram(shader.GetProgramId()));
 
@@ -190,7 +190,7 @@ void Renderer::DrawSkyBox(const Matrix& modelMatrix, Model& model, Shader& shade
 
 	shader.AddTexture("u_texture_cube", tex);	
 
-	shader.AddAttrib("a_pos", sizeof(Vector3) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, pos));	
+	shader.AddAttrib("a_pos", sizeof(glm::vec3) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, pos));	
 
 	shader.AddMatrix4fv("u_view", 1, GL_FALSE, viewMatrix);
 	shader.AddMatrix4fv("u_model", 1, GL_FALSE, modelMatrix);
@@ -201,8 +201,9 @@ void Renderer::DrawSkyBox(const Matrix& modelMatrix, Model& model, Shader& shade
 
 void Renderer::DrawDebug(const SceneObjectProperties& sop, const VertexBuffer& vb, const IndexBuffer& ib, Shader& shader, const Texture& tex)
 {
-	const Matrix& viewMatrix = SM->cameraMap[SM->activateCameraId]->viewMatrix;
-	const Matrix& perspectiveMatrix = SM->cameraMap[SM->activateCameraId]->perspectiveMatrix;
+
+	const glm::mat4& viewMatrix = SM->cameraMap[SM->activateCameraId]->viewMatrix;
+	const glm::mat4& perspectiveMatrix = SM->cameraMap[SM->activateCameraId]->perspectiveMatrix;
 
 	GLCall(glUseProgram(shader.GetProgramId()));
 
@@ -214,34 +215,35 @@ void Renderer::DrawDebug(const SceneObjectProperties& sop, const VertexBuffer& v
 	shader.AddTexture("u_texture", tex);	
 
 	//ModelAttributes
-	shader.AddAttrib("a_pos", sizeof(Vector3) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, pos));
-	shader.AddAttrib("a_uv", sizeof(Vector2) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, uv));
-	shader.AddAttrib("a_color", sizeof(Vector2) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, color));
+	shader.AddAttrib("a_pos", sizeof(glm::vec3) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, pos));
+	shader.AddAttrib("a_uv", sizeof(glm::vec2) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, uv));
+	shader.AddAttrib("a_color", sizeof(glm::vec2) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, color));
 
-	Matrix SM;
-	Matrix TM;
-	Matrix modelMatrix;
+	glm::mat4 SM;
+	glm::mat4 TM;
+	glm::mat4 modelMatrix;
 
-	SM = SM.SetScale((Vector3)sop.scale);
-	TM = TM.SetTranslation((Vector3)sop.translation);
+	//SM = glm::scale(glm::mat4(1.0f), sop.scale);
+	TM = glm::translate(glm::mat4(1.0f), sop.translation);
 
-	modelMatrix = SM * TM;
+	modelMatrix = TM;
 
-	modelMatrix.m[0][0] = viewMatrix.m[0][0];
-	modelMatrix.m[0][1] = viewMatrix.m[1][0];
-	modelMatrix.m[0][2] = viewMatrix.m[2][0];
-	modelMatrix.m[1][0] = viewMatrix.m[0][1];
-	modelMatrix.m[1][1] = viewMatrix.m[1][1];
-	modelMatrix.m[1][2] = viewMatrix.m[2][1];
-	modelMatrix.m[2][0] = viewMatrix.m[0][2];
-	modelMatrix.m[2][1] = viewMatrix.m[1][2];
-	modelMatrix.m[2][2] = viewMatrix.m[2][2];
+	modelMatrix[0][0] = viewMatrix[0][0];
+	modelMatrix[0][1] = viewMatrix[1][0];
+	modelMatrix[0][2] = viewMatrix[2][0];
+	modelMatrix[1][0] = viewMatrix[0][1];
+	modelMatrix[1][1] = viewMatrix[1][1];
+	modelMatrix[1][2] = viewMatrix[2][1];
+	modelMatrix[2][0] = viewMatrix[0][2];
+	modelMatrix[2][1] = viewMatrix[1][2];
+	modelMatrix[2][2] = viewMatrix[2][2];
 
-	Matrix LightMatrix = modelMatrix * (Matrix)(viewMatrix);
+	glm::mat4 LightMatrix = viewMatrix * modelMatrix;
 	
 	shader.AddMatrix4fv("u_LightMatrix", 1, GL_FALSE, LightMatrix);
-	shader.AddMatrix4fv("u_PerspectiveMatrix", 1, GL_FALSE, perspectiveMatrix);
+	shader.AddMatrix4fv("u_perspectiveMatrix", 1, GL_FALSE, perspectiveMatrix);
 	
 	//DrawCall
 	GLCall(glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_SHORT, nullptr));
+
 }
