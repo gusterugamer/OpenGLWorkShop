@@ -37,9 +37,9 @@ public:
 	Camera() = delete;
 	Camera(glm::vec3& position, glm::vec3& target, GLfloat fov, GLfloat nearZ, GLfloat farZ, float moveSpeed, float rotateSpeed);
 
-	void moveOx(char directie);
-	void moveOy(char directie);
-	void moveOz(char directie);
+	void moveOx(float directie);
+	void moveOy(float directie);
+	void moveOz(float directie);
 	void rotateOx(char directie);
 	void rotateOy(char directie);
 	void rotateOz(char directie);
@@ -47,7 +47,6 @@ public:
 	void UpdateWorldView();	
 
     const glm::vec3& GetPosition() const;
-	glm::vec3 Convert2Vec3(glm::vec4 & vec);	
 
 	const glm::mat4& GetperspectiveMatrix() const;
 	const glm::mat4& GetviewMatrix() const;	

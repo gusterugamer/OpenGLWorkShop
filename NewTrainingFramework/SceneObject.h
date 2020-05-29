@@ -7,10 +7,10 @@
 #include "VertexBuffer.h"
 
 struct Material {
-	glm::vec3 ambiental = { 1.0f,1.0f,1.0f };
-	glm::vec3 diffuse = { 1.0f,1.0f,1.0f };
-	glm::vec3 specular = { 1.0f,1.0f,1.0f };
-	float shininess = 0.5f;
+	glm::vec3 ambiental = { 0.2f, 0.2f, 0.2f };
+	glm::vec3 diffuse = { 0.0f, 0.0f, 0.0f };
+	glm::vec3 specular = { 1.0f, 1.0f, 1.0f };
+	float shininess = 0.01f;
 };
 
 struct SceneObjectProperties {

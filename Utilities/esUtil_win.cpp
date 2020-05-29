@@ -8,9 +8,11 @@
 // Main window procedure
 LRESULT WINAPI ESWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+	ESContext* esContext = (ESContext*)(LONG_PTR)GetWindowLongPtr(hWnd, GWL_USERDATA);
 	LRESULT  lRet = 1;
 	switch (uMsg)
 	{
+		
 	case WM_CREATE:
 		break;
 
@@ -18,10 +20,6 @@ LRESULT WINAPI ESWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		//Remove by trainee (no need to paint the window and then erase all just to update Draw , moved drawFunc update in loop to remove stuttering)
 	 /*  {
 		  ESContext *esContext = (ESContext*)(LONG_PTR) GetWindowLongPtr ( hWnd, GWL_USERDATA );
-
-		  if ( esContext && esContext->drawFunc )
-			 esContext->drawFunc ( esContext );
-
 		  ValidateRect( esContext->hWnd, NULL );
 	   }*/
 		break;
@@ -34,8 +32,6 @@ LRESULT WINAPI ESWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		//Added by trainee
 	case WM_SYSKEYDOWN:
 	{
-		ESContext* esContext = (ESContext*)(LONG_PTR)GetWindowLongPtr(hWnd, GWL_USERDATA);
-
 		//if (esContext && esContext->keyFunc)              
 		//    esContext->keyFunc(esContext, (unsigned char)wParam, true);
 			//Added by trainee
@@ -54,8 +50,6 @@ LRESULT WINAPI ESWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		//Added by trainee
 	case WM_SYSKEYUP:
 	{
-		ESContext* esContext = (ESContext*)(LONG_PTR)GetWindowLongPtr(hWnd, GWL_USERDATA);
-
 		//if ( esContext && esContext->keyFunc )
 		   // esContext->keyFunc ( esContext, (unsigned char) wParam, false );
 		//Added by trainee
@@ -69,8 +63,7 @@ LRESULT WINAPI ESWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	break;
 	//Added by trainee
 	case WM_CHAR:
-	{
-		ESContext* esContext = (ESContext*)(LONG_PTR)GetWindowLongPtr(hWnd, GWL_USERDATA);
+	{		
 		if (esContext)
 		{
 			esContext->kbd.OnChar(static_cast<unsigned char> (wParam));
@@ -82,8 +75,7 @@ LRESULT WINAPI ESWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	//*******************************MOUSEMESSAGES**********************************//
   //Added by trainee
 	case WM_LBUTTONDOWN:
-	{
-		ESContext* esContext = (ESContext*)(LONG_PTR)GetWindowLongPtr(hWnd, GWL_USERDATA);
+	{		
 		if (esContext)
 		{
 			POINTS pt = MAKEPOINTS(lParam);
@@ -93,8 +85,7 @@ LRESULT WINAPI ESWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	break;
 	//Added by trainee
 	case WM_LBUTTONUP:
-	{
-		ESContext* esContext = (ESContext*)(LONG_PTR)GetWindowLongPtr(hWnd, GWL_USERDATA);
+	{		
 		if (esContext)
 		{
 			POINTS pt = MAKEPOINTS(lParam);
@@ -104,8 +95,7 @@ LRESULT WINAPI ESWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	break;
 	//Added by trainee
 	case WM_RBUTTONDOWN:
-	{
-		ESContext* esContext = (ESContext*)(LONG_PTR)GetWindowLongPtr(hWnd, GWL_USERDATA);
+	{		
 		if (esContext)
 		{
 			POINTS pt = MAKEPOINTS(lParam);
@@ -115,8 +105,7 @@ LRESULT WINAPI ESWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	break;
 	//Added by trainee
 	case WM_RBUTTONUP:
-	{
-		ESContext* esContext = (ESContext*)(LONG_PTR)GetWindowLongPtr(hWnd, GWL_USERDATA);
+	{		
 		if (esContext)
 		{
 			POINTS pt = MAKEPOINTS(lParam);
@@ -126,8 +115,7 @@ LRESULT WINAPI ESWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	//Added by trainee
 	break;
 	case WM_MBUTTONDOWN:
-	{
-		ESContext* esContext = (ESContext*)(LONG_PTR)GetWindowLongPtr(hWnd, GWL_USERDATA);
+	{	
 		if (esContext)
 		{
 			POINTS pt = MAKEPOINTS(lParam);
@@ -137,8 +125,7 @@ LRESULT WINAPI ESWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	break;
 	//Added by trainee
 	case WM_MBUTTONUP:
-	{
-		ESContext* esContext = (ESContext*)(LONG_PTR)GetWindowLongPtr(hWnd, GWL_USERDATA);
+	{		
 		if (esContext)
 		{
 			POINTS pt = MAKEPOINTS(lParam);
@@ -149,8 +136,7 @@ LRESULT WINAPI ESWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 	//Added by trainee
 	case WM_MOUSEWHEEL:
-	{
-		ESContext* esContext = (ESContext*)(LONG_PTR)GetWindowLongPtr(hWnd, GWL_USERDATA);
+	{		
 		if (esContext)
 		{
 			POINTS pt = MAKEPOINTS(lParam);
@@ -167,8 +153,7 @@ LRESULT WINAPI ESWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	break;
 	//Added by trainee
 	case WM_MOUSEMOVE:
-	{
-		ESContext* esContext = (ESContext*)(LONG_PTR)GetWindowLongPtr(hWnd, GWL_USERDATA);
+	{		
 		if (esContext)
 		{
 			POINTS pt = MAKEPOINTS(lParam);
@@ -180,8 +165,7 @@ LRESULT WINAPI ESWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	//*******************************MOUSEMESSAGES**********************************//
 	//Added by trainee
 	case WM_KILLFOCUS:
-	{
-		ESContext* esContext = (ESContext*)(LONG_PTR)GetWindowLongPtr(hWnd, GWL_USERDATA);
+	{		
 		if (esContext)
 		{
 			esContext->kbd.ClearState();
@@ -296,16 +280,14 @@ void WinLoop(ESContext* esContext)
 		}
 		//Removed(commented) by trainee
 	  /*  else
-		   SendMessage( esContext->hWnd, WM_PAINT, 0, 0 );*/
+		   SendMessage( esContext->hWnd, WM_PAINT, 0, 0 );*/		   
 
-		   // Call Update function
+		// Call Draw Function
 		if (esContext->updateFunc != NULL)
 			esContext->updateFunc(esContext, deltaTime);
 
-		// Call Draw Function
+		// Call Update function	
 		if (esContext->drawFunc != NULL)
-			esContext->drawFunc(esContext);
-
-
+			esContext->drawFunc(esContext);		
 	}
 }

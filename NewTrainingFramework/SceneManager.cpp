@@ -10,7 +10,6 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <chrono>
 
 typedef rapidxml::xml_node<> xmlnode;
 typedef rapidxml::xml_attribute<> xmlattr;
@@ -43,9 +42,8 @@ void SceneManager::ReadXML()
 			std::string doc= buffer.str();			
 			
 			xmldoc.parse<0>(&doc[0]);
-			xmlf.close();			
+			xmlf.close();				
 			
-			auto start = std::chrono::high_resolution_clock::now();
 			//Variabila temporara pentru ID citit din XML
 			int tempID = 0;
 			//Acesare primului nod din XML (sceneManager)
@@ -286,7 +284,7 @@ void SceneManager::ReadXML()
 			}
 			else
 			{
-				glm::vec3 ambiental;
+				glm::vec3 ambiental = glm::vec3(0.0f);
 				int shaderId = 7;
 				if (xmlnode* pSubNode = pRoot_SubNode->first_node("ambiental"))
 				{					
@@ -358,8 +356,8 @@ void SceneManager::ReadXML()
 						LR->specular.x = std::stof(ppNode->first_node("specularColor")->first_node("r")->value());
 						LR->specular.y = std::stof(ppNode->first_node("specularColor")->first_node("g")->value());
 						LR->specular.z = std::stof(ppNode->first_node("specularColor")->first_node("b")->value());
-						LR->cutOff = std::stof(ppNode->first_node("cutOff")->value());
-						LR->outterCutOff = std::stof(ppNode->first_node("outterCutOff")->value());
+						LR->cutOff = glm::radians(std::stof(ppNode->first_node("cutOff")->value()));
+						LR->outterCutOff = glm::radians(std::stof(ppNode->first_node("outterCutOff")->value()));
 						LR->direction.x = std::stof(ppNode->first_node("direction")->first_node("x")->value());
 						LR->direction.y = std::stof(ppNode->first_node("direction")->first_node("y")->value());
 						LR->direction.z = std::stof(ppNode->first_node("direction")->first_node("z")->value());
@@ -421,10 +419,7 @@ void SceneManager::ReadXML()
 				}
 			}
 			//Citire active camera din XML
-			activateCameraId = std::stoi(pRoot_node->first_node("activeCamera")->value());
-			auto end = std::chrono::high_resolution_clock::now();
-			std::chrono::duration<float> duration = end - start;
-			float f = duration.count();
+			activateCameraId = std::stoi(pRoot_node->first_node("activeCamera")->value());			
 		}
 	}
 	catch (const std::runtime_error& sceXml)

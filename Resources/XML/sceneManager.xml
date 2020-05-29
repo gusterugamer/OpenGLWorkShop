@@ -101,7 +101,7 @@
       <position>
         <!-- translatia -->
         <x>33</x>
-        <y>0</y>
+        <y>-10</y>
         <z>-15</z>
       </position>
       <rotation>
@@ -291,18 +291,18 @@
 	<lights>
      <ambiental>
        <color>
-         <r>1.0</r>
-         <g>1.0</g>
-         <b>1.0</b>
+         <r>0.2</r>
+         <g>0.2</g>
+         <b>0.2</b>
        </color>
      </ambiental>   
-    <shaderId>7</shaderId>    
+    <shaderId>7</shaderId>
 
     <light id="17" type="spot">
       <diffuseColor>
-        <r>1.0</r>
-        <g>1.0</g>
-        <b>1.0</b>
+        <r>0.5</r>
+        <g>0.5</g>
+        <b>0.5</b>
       </diffuseColor>
       <specularColor>
         <r>1.0</r>
@@ -314,70 +314,22 @@
       <textureId>22</textureId>
       <translation>
         <x>0.0</x>
-        <y>1.0</y>
-        <z>0.0</z>
+        <y>0.0</y>
+        <z>-15.0</z>
       </translation>
       <direction>
         <x>0.0</x>
         <y>0.0</y>
         <z>1.0</z>
       </direction>
-      <cutOff>0.97629</cutOff>
-      <outterCutOff>0.95371</outterCutOff>
-      <intensity>50.0</intensity>
-      <range>50.0</range>
-    </light>    
-     
-       <light id="16" type="directional">
-      <diffuseColor>
-        <r>1.0</r>
-        <g>1.0</g>
-        <b>1.0</b>
-      </diffuseColor>
-      <specularColor>
-        <r>1.0</r>
-        <g>1.0</g>
-        <b>1.0</b>
-      </specularColor>
-      <name>DirectionalLight</name>
-      <id>21</id>
-      <textureId>20</textureId>
-      <translation>
-        <x>0.0</x>
-        <y>5.0</y>
-        <z>-10.0</z>
-      </translation>
-      <direction>
-        <x>0.0</x>
-        <y>0.0</y>
-        <z>1.0</z>
-      </direction>
+      <cutOff>45.5</cutOff>
+      <outterCutOff>60.5</outterCutOff>
       <intensity>1.0</intensity>
+      <range>80.0</range>
     </light>
     
-  <light id="16" type="point">
-      <diffuseColor>
-        <r>1.0</r>
-        <g>1.0</g>
-        <b>1.0</b>
-      </diffuseColor>
-      <specularColor>
-        <r>1.0</r>
-        <g>1.0</g>
-        <b>1.0</b>
-      </specularColor>
-      <name>SpotLight</name>
-      <id>20</id>
-      <textureId>21</textureId>
-      <translation>
-        <x>0.0</x>
-        <y>5.0</y>
-        <z>15.0</z>
-      </translation>      
-      <intensity>100.0</intensity>
-    <range>50.0</range>
-    </light>
-    
+
+
   </lights>
 	
 	<debugSettings>

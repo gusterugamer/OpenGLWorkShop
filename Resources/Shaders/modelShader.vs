@@ -16,9 +16,9 @@ uniform vec3 u_lightPosition;
 void main()
 {	
 	vec4 pos = vec4(a_pos, 1.0);
-	vec4 worldPosition = u_model * pos;	
+	vec4 worldPosition = u_model * pos;
+	
 	v_FragPos = worldPosition.xyz;
-
 	v_uv = a_uv;
 	v_normal = a_normal;
 	
