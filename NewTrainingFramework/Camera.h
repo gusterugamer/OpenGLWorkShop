@@ -44,6 +44,7 @@ public:
 	void rotateOy(char directie);
 	void rotateOz(char directie);
 	void Update(ESContext* esContext, const float& deltaTime);	
+	void FixedUpdate(ESContext* esContext, const float& deltaTime);
 	void UpdateWorldView();	
 
     const glm::vec3& GetPosition() const;

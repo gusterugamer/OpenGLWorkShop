@@ -65,4 +65,5 @@ public:
 	
 	virtual void Draw();		
 	virtual void Update(ESContext* esContext, const float& deltaTime);
+	virtual void FixedUpdate(ESContext* esContext, const float& fixedDeltaTime);
 };

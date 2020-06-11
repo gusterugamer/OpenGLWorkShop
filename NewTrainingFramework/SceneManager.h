@@ -33,6 +33,7 @@ public:
 	void Init();
 	void Draw();
 	void Update(ESContext* esContext,const float& deltaTime);
+	void FixedUpdate(ESContext* esContext, const float& fixedDeltaTime);
 	std::shared_ptr<Camera> GetCurrentCamera();		
 	~SceneManager(); 	
 };

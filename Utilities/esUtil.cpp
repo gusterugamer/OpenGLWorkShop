@@ -168,6 +168,11 @@ void ESUTIL_API esRegisterUpdateFunc ( ESContext *esContext, void (ESCALLBACK *u
    esContext->updateFunc = updateFunc;
 }
 
+void ESUTIL_API esRegisterFixedUpdateFunc(ESContext* esContext, void (ESCALLBACK* fixedUpdateFunc) (ESContext*, float))
+{
+    esContext->fixedUpdateFunc = fixedUpdateFunc;
+}
+
 
 //  esRegisterKeyFunc()
 

@@ -466,6 +466,15 @@ void SceneManager::Update(ESContext* esContext,const float& deltaTime)
 	cameraMap[activateCameraId]->Update(esContext, deltaTime);	
 }
 
+void SceneManager::FixedUpdate(ESContext* esContext, const float& fixedDeltaTime)
+{
+	for (auto n : sceneObjectsMap)
+	{
+		n.second->FixedUpdate(esContext, fixedDeltaTime);
+	}
+	cameraMap[activateCameraId]->FixedUpdate(esContext, fixedDeltaTime);
+}
+
 std::shared_ptr<Camera> SceneManager::GetCurrentCamera()
 {
 	return cameraMap[activateCameraId];

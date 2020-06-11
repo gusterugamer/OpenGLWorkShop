@@ -5,24 +5,19 @@
 #include <cmath>
 #include <iostream>
 
+static constexpr float fixedDeltaTime = 0.1f;
+
+
 // Main window procedure
 LRESULT WINAPI ESWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
+{	
 	ESContext* esContext = (ESContext*)(LONG_PTR)GetWindowLongPtr(hWnd, GWL_USERDATA);
 	LRESULT  lRet = 1;
 	switch (uMsg)
 	{
 		
 	case WM_CREATE:
-		break;
-
-	case WM_PAINT:
-		//Remove by trainee (no need to paint the window and then erase all just to update Draw , moved drawFunc update in loop to remove stuttering)
-	 /*  {
-		  ESContext *esContext = (ESContext*)(LONG_PTR) GetWindowLongPtr ( hWnd, GWL_USERDATA );
-		  ValidateRect( esContext->hWnd, NULL );
-	   }*/
-		break;
+		break;	
 
 	case WM_DESTROY:
 		PostQuitMessage(0);
@@ -195,9 +190,7 @@ GLboolean WinCreate(ESContext* esContext, const char* title)
 	wndclass.style = CS_OWNDC;
 	wndclass.lpfnWndProc = (WNDPROC)ESWindowProc;
 	wndclass.hInstance = hInstance;
-	wndclass.hbrBackground = nullptr; /*(HBRUSH)GetStockObject(BLACK_BRUSH); (removed because there is no need to draw backgroud that is
-									  going to be overwritten by opengl anyway,
-									  this helps to remove stutter when camera moves throw scene)*/
+	wndclass.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH); 
 	wndclass.lpszClassName = "opengles2.0";
 
 	if (!RegisterClass(&wndclass))
@@ -234,8 +227,8 @@ GLboolean WinCreate(ESContext* esContext, const char* title)
 		MessageBox(NULL, "Can not create window!", "Error", 0);
 		return -1;
 	}
-	SetWindowLongPtr(esContext->hWnd, GWL_USERDATA,/*(LONG)- Commented by trainee function is called LongPtr so it take a long pointer
-													  to the value(or the class in our case) that gets linked to the window*/ (LONG_PTR)esContext);
+	SetWindowLongPtr(esContext->hWnd, GWL_USERDATA, (LONG)(LONG_PTR)esContext);
+
 
 	if (esContext->hWnd == NULL)
 		return GL_FALSE;
@@ -250,22 +243,20 @@ GLboolean WinCreate(ESContext* esContext, const char* title)
 //      Start main windows loop
 void WinLoop(ESContext* esContext)
 {
-	MSG msg = { 0 };
+	MSG msg = { 0 };	
 	int done = 0;
-	//GetTickCount function is slow and causes small stuttering
-	// DWORD lastTime = GetTickCount();
 	auto timeNow = std::chrono::high_resolution_clock::now();
+	float fixedTimePassed = 0.0f;
 
 	while (!done)
-	{
+	{	
 		int gotMsg = (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE) != 0);
-		//DWORD curTime = GetTickCount();
-		auto timeEnd = std::chrono::high_resolution_clock::now();
-		//float deltaTime = (float)( curTime - lastTime ) / 1000.0f;
-	   // lastTime = curTime;
-		std::chrono::duration<float> timePast = timeEnd - timeNow;
+		auto timeEnd = std::chrono::high_resolution_clock::now();		
+		std::chrono::duration<float> timePast = timeEnd - timeNow;		
 		float deltaTime = timePast.count();
-		timeNow = timeEnd;
+		fixedTimePassed += deltaTime;
+		timeNow = timeEnd;		
+
 		if (gotMsg)
 		{
 			if (msg.message == WM_QUIT)
@@ -276,18 +267,29 @@ void WinLoop(ESContext* esContext)
 			{
 				TranslateMessage(&msg);
 				DispatchMessage(&msg);
-			}
+			}			
 		}
-		//Removed(commented) by trainee
-	  /*  else
-		   SendMessage( esContext->hWnd, WM_PAINT, 0, 0 );*/		   
+		else
+		{
+			if (esContext && esContext->drawFunc != NULL)
+				esContext->drawFunc(esContext);
+		}
+		if (esContext && esContext->updateFunc != NULL)
+			esContext->updateFunc(esContext, deltaTime);		
+		
+		if (fixedTimePassed >= fixedDeltaTime)
+		{
+			fixedTimePassed = 0.0f;
+			if (esContext && esContext->updateFunc != NULL)
+				esContext->fixedUpdateFunc(esContext, fixedDeltaTime);
+		}
 
-		// Call Draw Function
-		if (esContext->updateFunc != NULL)
-			esContext->updateFunc(esContext, deltaTime);
+		//Removed(commented) by trainee	
 
-		// Call Update function	
-		if (esContext->drawFunc != NULL)
-			esContext->drawFunc(esContext);		
+		//   // Call Update function	
+		//if (esContext->drawFunc != NULL)
+		//	esContext->drawFunc(esContext);
+
+			
 	}
 }

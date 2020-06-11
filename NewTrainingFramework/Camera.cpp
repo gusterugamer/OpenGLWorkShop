@@ -30,7 +30,7 @@ const glm::mat4& Camera::GetviewMatrix() const
 
 void Camera::QuatRotationY(int mousePos)
 {
-	glm::quat Quaternion = glm::angleAxis(glm::radians((float)mousePos * 10.0f) * deltaTime, glm::vec3(0.0f, 1.0f, 0.0f));	
+	glm::quat Quaternion = glm::angleAxis(glm::radians((float)mousePos*10.0f ) * deltaTime, glm::vec3(0.0f, 1.0f, 0.0f));
 
 	left = glm::vec3(Quaternion * glm::vec4(left, 1.0f));
 	forward = glm::vec3(Quaternion * glm::vec4(forward, 1.0f));
@@ -42,7 +42,7 @@ void Camera::QuatRotationY(int mousePos)
 
 void Camera::QuatRotationX(int mousePos)
 {	
-	glm::quat Quaternion = glm::angleAxis(glm::radians((float)mousePos*10.0f) * deltaTime,left);	
+	glm::quat Quaternion = glm::angleAxis(glm::radians((float)mousePos*10.0f )* deltaTime,left);
 	
 	UP = glm::vec3(Quaternion * glm::vec4(UP,1.0f));
 	left = glm::vec3(Quaternion * glm::vec4(left, 1.0f));
@@ -181,7 +181,7 @@ void Camera::Update(ESContext* esContext, const float& deltaTime)
 	{
 		startMousePos = esContext->mouse.getPosition();
 	}
-	if (esContext->mouse.IsMouseButtonPressed(VK_RBUTTON))
+	else if (esContext->mouse.IsMouseButtonPressed(VK_RBUTTON))
 	{			
 		point = esContext->mouse.getPosition();	
 		int dx = startMousePos.first - point.first;
@@ -190,6 +190,10 @@ void Camera::Update(ESContext* esContext, const float& deltaTime)
 		QuatRotationX(dy);		
 		startMousePos = point;
 	}	
+}
+
+void Camera::FixedUpdate(ESContext* esContext, const float& deltaTime)
+{
 }
 
 void Camera::UpdateWorldView()

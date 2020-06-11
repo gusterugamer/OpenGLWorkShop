@@ -199,7 +199,7 @@
       </textures>
       <position>
         <!-- translatia -->
-        <x>33</x>
+        <x>0</x>
         <y>0</y>
         <z>-15</z>
       </position>
@@ -296,40 +296,33 @@
          <b>0.2</b>
        </color>
      </ambiental>   
-    <shaderId>7</shaderId>
-
-    <light id="17" type="spot">
+    <shaderId>7</shaderId>   
+    <light id="16" type="directional">
       <diffuseColor>
-        <r>0.5</r>
-        <g>0.5</g>
-        <b>0.5</b>
+        <r>1.0</r>
+        <g>1.0</g>
+        <b>1.0</b>
       </diffuseColor>
       <specularColor>
         <r>1.0</r>
         <g>1.0</g>
         <b>1.0</b>
       </specularColor>
-      <name>SpotLight</name>
-      <id>22</id>
-      <textureId>22</textureId>
+      <name>DirectionalLight</name>
+      <id>20</id>
+      <textureId>20</textureId>
       <translation>
         <x>0.0</x>
-        <y>0.0</y>
-        <z>-15.0</z>
+        <y>5.0</y>
+        <z>-10.0</z>
       </translation>
       <direction>
         <x>0.0</x>
-        <y>0.0</y>
-        <z>1.0</z>
+        <y>-1.0</y>
+        <z>0.0</z>
       </direction>
-      <cutOff>45.5</cutOff>
-      <outterCutOff>60.5</outterCutOff>
       <intensity>1.0</intensity>
-      <range>80.0</range>
     </light>
-    
-
-
   </lights>
 	
 	<debugSettings>

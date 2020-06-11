@@ -50,6 +50,7 @@ public:
    void (ESCALLBACK *drawFunc) ( ESContext * );
    void (ESCALLBACK *keyFunc) ( ESContext *, unsigned char, bool );
    void (ESCALLBACK *updateFunc) ( ESContext *, float deltaTime );
+   void (ESCALLBACK *fixedUpdateFunc) (ESContext*, float fixedDeltaTime);
 
    //Keyboard
    Keyboard kbd;
@@ -101,6 +102,10 @@ void ESUTIL_API esRegisterDrawFunc ( ESContext *esContext, void (ESCALLBACK *dra
 /// \param updateFunc Update callback function that will be used to render the scene
 //
 void ESUTIL_API esRegisterUpdateFunc ( ESContext *esContext, void (ESCALLBACK *updateFunc) ( ESContext*, float ) );
+/// \brief Register an fixedUpdate callback function to be used to update on each fixed time step given by the user
+/// \param esContext Application context
+/// \param updateFunc Update callback function that will be used to render the scene
+void ESUTIL_API esRegisterFixedUpdateFunc(ESContext* esContext, void (ESCALLBACK* fixedUpdateFunc) (ESContext*, float));
 
 //
 /// \brief Register an keyboard input processing callback function

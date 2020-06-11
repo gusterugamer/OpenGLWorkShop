@@ -22,22 +22,7 @@ Terrain::~Terrain()
 
 void Terrain::Draw()
 {
-
-	//Calculare model glm::mat4 teren;
-	glm::mat4 RM;
-	glm::mat4 SM;
-	glm::mat4 TM;
-	glm::mat4 modelMatrix;
-
-	glm::quat quaternion = glm::quat(sop.rotation);
-	RM = glm::toMat4(quaternion);
-	SM = glm::scale(glm::mat4(1.0f), sop.scale);
-	TM = glm::translate(glm::mat4(1.0f), sop.translation);
-
-	modelMatrix = TM * RM * SM;
-
-	Renderer::DrawBlendedTextures(modelMatrix,vb,ib,*pShader,terrainTexMap);
-
+	Renderer::DrawBlendedTextures(sop,vb,ib,*pShader,terrainTexMap);
 	//Trasmitere modelMatrix catre fragment shader	
 	
 
@@ -62,6 +47,8 @@ void Terrain::Init(){
 				-((z - (float)std::ceil(sop.numarCelule / 2))*sop.dimensiuneCelule + (float)sop.dimensiuneCelule / 2)
 			);
 
+			//Generare normala
+			v.norm = glm::vec3(0.0f, 1.0f, 0.0f);
 
 			//Generare UV celule
 			v.uv = glm::vec2(x, z);
@@ -101,7 +88,7 @@ void Terrain::Update(ESContext* esContext,const float& deltaTime)
 	dx = SceneManager::GetInstance()->GetCurrentCamera()->GetPosition().x - sop.translation.x;
 	dz = SceneManager::GetInstance()->GetCurrentCamera()->GetPosition().z - sop.translation.z;
 
-	if (std::abs(dx) >= sop.dimensiuneCelule && dx>0)
+	/*if (std::abs(dx) >= sop.dimensiuneCelule && dx>0)
 	{
 		moveTextureX += (1 / (float)sop.numarCelule);
 		sop.translation.x += std::abs(dx);
@@ -120,5 +107,5 @@ void Terrain::Update(ESContext* esContext,const float& deltaTime)
 	{
 		moveTextureY += (1 / (float)sop.numarCelule);
 		sop.translation.z -= std::abs(dz);		
-	}	
+	}	*/
 }

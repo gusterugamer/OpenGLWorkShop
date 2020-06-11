@@ -18,19 +18,24 @@ int Init(ESContext *esContext)
 
 void Draw(ESContext *esContext)
 {
+	GLCall(glEnable(GL_STENCIL_TEST));
 	GLCall(glEnable(GL_DEPTH_TEST));
 	GLCall(glEnable(GL_BLEND));
 	GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
-	GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
+	GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT));
 
-	SM->Draw();		
+	SM->Draw();
 	eglSwapBuffers(esContext->eglDisplay, esContext->eglSurface);	
 	
 }
 
 void Update(ESContext *esContext, float deltaTime)
 {	
-	SM->Update(esContext, deltaTime);
+	SM->Update(esContext, deltaTime);	
+}
+
+void FixedUpdate(ESContext* esContext, float fixedDeltaTime)
+{
 }
 
 void Key ( ESContext *esContext, unsigned char key,bool bIsPressed)
@@ -58,6 +63,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	esRegisterDrawFunc ( &esContext, Draw );
 	esRegisterUpdateFunc ( &esContext, Update );
 	esRegisterKeyFunc ( &esContext, Key);
+	esRegisterFixedUpdateFunc(&esContext, FixedUpdate);
 
 	esMainLoop ( &esContext );
 

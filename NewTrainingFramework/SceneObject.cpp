@@ -26,3 +26,7 @@ void SceneObject::Draw()
 void SceneObject::Update(ESContext* esContext, const float& deltaTime)
 {
 }
+
+void SceneObject::FixedUpdate(ESContext* esContext, const float& fixedDeltaTime)
+{
+}
