@@ -14,7 +14,7 @@ uniform mat4 u_model;
 uniform mat4 u_perspective;
 uniform vec3 u_lightPosition;
 
-const float density = 0.035;
+const float density = 0.007;
 const float gradient = 5.0;
 
 void main()

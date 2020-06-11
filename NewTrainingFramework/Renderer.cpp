@@ -261,6 +261,8 @@ void Renderer::DrawSkyBox(const glm::mat4& modelMatrix, Model& model, Shader& sh
 
 	shader.AddAttrib("a_pos", sizeof(glm::vec3) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, pos));	
 
+	shader.AddUniform3f("u_fogColor", glm::vec3(0.5f, 0.5f, 0.5f));
+
 	shader.AddMatrix4fv("u_view", 1, GL_FALSE, viewMatrix);
 	shader.AddMatrix4fv("u_model", 1, GL_FALSE, modelMatrix);
 	shader.AddMatrix4fv("u_perspective", 1, GL_FALSE, perspectiveMatrix);

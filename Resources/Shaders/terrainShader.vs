@@ -15,7 +15,7 @@ varying vec3 v_normal;
 varying vec3 v_FragPos;
 varying float v_visibility;
 
-const float density = 0.0095;
+const float density = 0.007;
 const float gradient = 5.0;
 
 
